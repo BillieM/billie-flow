@@ -1,0 +1,3876 @@
+{
+  "schema_version": "billie-flow.results.v2",
+  "run": {
+    "id": "voice-memo",
+    "title": "Voice Memo ASR Bake-off",
+    "created_at": "2026-07-08T14:29:02Z",
+    "audio_file": "input.m4a",
+    "duration_seconds": 35.317551,
+    "notes": "Real Voice Memos sample used to compare the first local ASR baseline outputs. The clip is long enough to exercise chunking decisions and contains useful project vocabulary: Wispr Flow, Billie Flow, LLM, and MacBook.",
+    "cleanup_generated_at": "2026-07-08T16:30:48Z",
+    "known_vocabulary": [
+      "Wispr Flow",
+      "Billie Flow",
+      "LLM",
+      "MacBook"
+    ],
+    "audio_normalization": {
+      "source": "input.m4a",
+      "normalized": "input-16khz.wav",
+      "sample_rate_hz": 16000,
+      "channels": 1
+    }
+  },
+  "asr_results": [
+    {
+      "id": "mlx-whisper-large-v3-turbo",
+      "label": "MLX Whisper large-v3-turbo",
+      "status": "complete",
+      "install_status": "available",
+      "runtime": "mlx-whisper",
+      "model_ref": "mlx-community/whisper-large-v3-turbo",
+      "chunking_strategy": "whole-file",
+      "runtime_seconds": 3.68,
+      "peak_memory_gb": null,
+      "chunks": [
+        {
+          "index": 1,
+          "start_seconds": 0.0,
+          "end_seconds": 6.82,
+          "text": "Okay, so I am just going to ramble for a little bit and see how good the quality of this"
+        },
+        {
+          "index": 2,
+          "start_seconds": 8.860000000000001,
+          "end_seconds": 15.42,
+          "text": "voice memo is, I suppose. So essentially, let's say that I wanted to build a"
+        },
+        {
+          "index": 3,
+          "start_seconds": 16.78,
+          "end_seconds": 24.3,
+          "text": "project where we were making a local voice clone. So similar to Whisperflow, but not quite Whisperflow"
+        },
+        {
+          "index": 4,
+          "start_seconds": 24.3,
+          "end_seconds": 30.18,
+          "text": "because we would call it Billy Flow, and the whole premise would be that it runs"
+        },
+        {
+          "index": 5,
+          "start_seconds": 31.28,
+          "end_seconds": 34.26,
+          "text": "using a local LLM on my MacBook."
+        }
+      ],
+      "stitched_transcript": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially, let's say that I wanted to build a project where we were making a local voice clone. So similar to Whisperflow, but not quite Whisperflow because we would call it Billy Flow, and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "language": "en",
+      "adapter": {},
+      "errors": [],
+      "warnings": [],
+      "review": {
+        "rank": 1,
+        "summary": "Best default ASR result. It is fast, coherent, and hears LLM, but still needs vocabulary correction for Wispr Flow and Billie Flow.",
+        "strengths": [
+          "Correctly hears local LLM",
+          "Readable punctuation and casing",
+          "Warm runtime is practical for a menu bar app"
+        ],
+        "weaknesses": [
+          "Normalizes Wispr Flow to Whisperflow",
+          "Writes Billie Flow as Billy Flow",
+          "Needs a vocabulary/context correction layer"
+        ],
+        "vocabulary": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Whisperflow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Billy Flow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "correct",
+            "observed_errors": []
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": []
+          }
+        ],
+        "scores": {
+          "accuracy": 3,
+          "vocabulary": 3,
+          "readability": 5,
+          "latency": 4,
+          "hallucination_risk": 1
+        }
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny",
+      "label": "MLX Whisper tiny",
+      "status": "complete",
+      "install_status": "available",
+      "runtime": "mlx-whisper",
+      "model_ref": "mlx-community/whisper-tiny",
+      "chunking_strategy": "whole-file",
+      "runtime_seconds": 2.0,
+      "peak_memory_gb": null,
+      "chunks": [
+        {
+          "index": 1,
+          "start_seconds": 0.0,
+          "end_seconds": 6.8,
+          "text": "Okay, so I am just going to ramble for a little bit and see how good the quality of this"
+        },
+        {
+          "index": 2,
+          "start_seconds": 8.879999999999999,
+          "end_seconds": 15.66,
+          "text": "voice memo is, I suppose. So essentially let's say that I wanted to build a"
+        },
+        {
+          "index": 3,
+          "start_seconds": 17.099999999999998,
+          "end_seconds": 23.7,
+          "text": "project where we were making a local voice clone. So similar to whisper flow but not quite"
+        },
+        {
+          "index": 4,
+          "start_seconds": 23.7,
+          "end_seconds": 27.04,
+          "text": "with flow because we would call it Billy Flow."
+        },
+        {
+          "index": 5,
+          "start_seconds": 28.18,
+          "end_seconds": 34.42,
+          "text": "The whole premise would be that it runs using a local LLL on my Macbook."
+        }
+      ],
+      "stitched_transcript": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially let's say that I wanted to build a project where we were making a local voice clone. So similar to whisper flow but not quite with flow because we would call it Billy Flow. The whole premise would be that it runs using a local LLL on my Macbook.",
+      "language": "en",
+      "adapter": {},
+      "errors": [],
+      "warnings": [],
+      "review": {
+        "rank": 5,
+        "summary": "Good smoke test, not good enough for quality. It keeps the shape, but loses exactly the project vocabulary this app cares about.",
+        "strengths": [
+          "Very fast warm runtime",
+          "Captures the broad idea",
+          "Useful for runner checks"
+        ],
+        "weaknesses": [
+          "Hears LLM as LLL",
+          "Splits Wispr Flow into the wrong phrase",
+          "Lower confidence around key terms"
+        ],
+        "vocabulary": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "whisper flow",
+              "with flow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Billy Flow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "LLL"
+            ]
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": [
+              "Macbook"
+            ]
+          }
+        ],
+        "scores": {
+          "accuracy": 2,
+          "vocabulary": 2,
+          "readability": 4,
+          "latency": 5,
+          "hallucination_risk": 2
+        }
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio",
+      "label": "Gemma 4 12B Audio",
+      "status": "complete",
+      "install_status": "available",
+      "runtime": "transformers",
+      "model_ref": "google/gemma-4-12b-it",
+      "chunking_strategy": "fixed-25s-overlap-2s",
+      "runtime_seconds": 258.7937924161088,
+      "peak_memory_gb": null,
+      "chunks": [
+        {
+          "index": 1,
+          "start_seconds": 0.0,
+          "end_seconds": 25.0,
+          "text": "Okay, so I am just going to ramble for a little bit and um see how good the quality of this uh voice memo is, I suppose. Um so, essentially, let's say that I wanted to build a um project where we are making a local voice clone. Um so, similar to WhisperFlow but not quite WhisperFlow because exactly."
+        },
+        {
+          "index": 2,
+          "start_seconds": 23.0,
+          "end_seconds": 35.3175625,
+          "text": "I've been not quite with the flow because, we would call it, Billy flow, um, and the whole premise would be that it runs, um, using a local LLM on my MacBook."
+        }
+      ],
+      "stitched_transcript": "Okay, so I am just going to ramble for a little bit and um see how good the quality of this uh voice memo is, I suppose. Um so, essentially, let's say that I wanted to build a um project where we are making a local voice clone. Um so, similar to WhisperFlow but not quite WhisperFlow because exactly. I've been not quite with the flow because, we would call it, Billy flow, um, and the whole premise would be that it runs, um, using a local LLM on my MacBook.",
+      "language": "en",
+      "adapter": {
+        "id": "gemma-4-12b-audio",
+        "kind": "local-transformers-run",
+        "script": "scripts/run_gemma_audio_asr.py"
+      },
+      "errors": [],
+      "warnings": [
+        "Original configured Hub id google/gemma-4-12b-audio does not exist; used public audio-capable google/gemma-4-12b-it."
+      ],
+      "review": {
+        "rank": 4,
+        "summary": "Completed, but not default-worthy. The public audio-capable Gemma 4 12B checkpoint ran, but chunk overlap introduced text drift and the path is far slower than Whisper.",
+        "strengths": [
+          "Public Gemma 4 12B audio-capable checkpoint can run locally through Transformers",
+          "Correctly hears local LLM and MacBook",
+          "Useful evidence for the native-audio branch"
+        ],
+        "weaknesses": [
+          "The originally named google/gemma-4-12b-audio Hub id does not exist",
+          "Chunk overlap produced drift around the Wispr Flow sentence",
+          "Too slow and too fragile for the first app default"
+        ],
+        "vocabulary": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "WhisperFlow",
+              "with the flow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Billy flow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "correct",
+            "observed_errors": []
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": []
+          }
+        ],
+        "scores": {
+          "accuracy": 3,
+          "vocabulary": 3,
+          "readability": 4,
+          "latency": 1,
+          "hallucination_risk": 3
+        }
+      }
+    },
+    {
+      "id": "voxtral-mini-3b",
+      "label": "Voxtral Mini 3B",
+      "status": "complete",
+      "install_status": "available",
+      "runtime": "transformers",
+      "model_ref": "mistralai/Voxtral-Mini-3B-2507",
+      "chunking_strategy": "long-form",
+      "runtime_seconds": 110.85089758294635,
+      "peak_memory_gb": null,
+      "chunks": [
+        {
+          "index": 1,
+          "start_seconds": null,
+          "end_seconds": null,
+          "text": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially, let's say that I wanted to build a project where we were making a local voice clone. So similar to WhisperFlow, but not quite WhisperFlow, because we would call it BillyFlow. and the whole premise would be that it runs using a local LLM on my MacBook."
+        }
+      ],
+      "stitched_transcript": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially, let's say that I wanted to build a project where we were making a local voice clone. So similar to WhisperFlow, but not quite WhisperFlow, because we would call it BillyFlow. and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "language": "en",
+      "adapter": {
+        "id": "voxtral-mini-3b",
+        "kind": "local-transformers-run",
+        "script": "scripts/run_voxtral_asr.py"
+      },
+      "errors": [],
+      "warnings": [],
+      "review": {
+        "rank": 3,
+        "summary": "High-readability lab candidate. It produces a clean transcript and gets LLM/MacBook, but the runtime is high and it collapses the project names.",
+        "strengths": [
+          "Readable punctuation and casing",
+          "Correctly hears local LLM and MacBook",
+          "Runs through the current Transformers Voxtral path on MPS"
+        ],
+        "weaknesses": [
+          "Writes Wispr Flow as WhisperFlow",
+          "Writes Billie Flow as BillyFlow",
+          "Much slower than the MLX Whisper default"
+        ],
+        "vocabulary": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "WhisperFlow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "BillyFlow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "correct",
+            "observed_errors": []
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": []
+          }
+        ],
+        "scores": {
+          "accuracy": 3,
+          "vocabulary": 3,
+          "readability": 5,
+          "latency": 1,
+          "hallucination_risk": 1
+        }
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3",
+      "label": "Parakeet TDT 0.6B v3",
+      "status": "complete",
+      "install_status": "available",
+      "runtime": "nemo",
+      "model_ref": "nvidia/parakeet-tdt-0.6b-v3",
+      "chunking_strategy": "whole-file",
+      "runtime_seconds": 42.81342004099861,
+      "peak_memory_gb": null,
+      "chunks": [
+        {
+          "index": 1,
+          "start_seconds": 0.16,
+          "end_seconds": 11.040000000000001,
+          "text": "Okay, so I am just gonna ramble for a little bit and um see how good the quality of this uh voice memo is I suppose."
+        },
+        {
+          "index": 2,
+          "start_seconds": 11.28,
+          "end_seconds": 20.96,
+          "text": "Um so essentially let's say that I wanted to build a um project where we were making a local voice clone."
+        },
+        {
+          "index": 3,
+          "start_seconds": 21.12,
+          "end_seconds": 27.36,
+          "text": "Um so similar to Whisperflow but not quite Whisperflow because we would call it Billy Flow."
+        },
+        {
+          "index": 4,
+          "start_seconds": 27.52,
+          "end_seconds": 34.800000000000004,
+          "text": "Um and the whole premise would be that it runs um using a local LLM on my MacBook."
+        }
+      ],
+      "stitched_transcript": "Okay, so I am just gonna ramble for a little bit and um see how good the quality of this uh voice memo is I suppose. Um so essentially let's say that I wanted to build a um project where we were making a local voice clone. Um so similar to Whisperflow but not quite Whisperflow because we would call it Billy Flow. Um and the whole premise would be that it runs um using a local LLM on my MacBook.",
+      "language": null,
+      "adapter": {
+        "id": "parakeet-tdt-0.6b-v3",
+        "kind": "local-nemo-run",
+        "script": "scripts/run_nemo_parakeet.py"
+      },
+      "errors": [],
+      "warnings": [],
+      "review": {
+        "rank": 2,
+        "summary": "Strong lab candidate. It preserves filler and timing detail better than Whisper, but is much slower and still misses the product names.",
+        "strengths": [
+          "Preserves ums and spoken cadence",
+          "Produces useful timestamps",
+          "Correctly hears local LLM and MacBook"
+        ],
+        "weaknesses": [
+          "Normalizes Wispr Flow to Whisperflow",
+          "Writes Billie Flow as Billy Flow",
+          "Runtime is too slow for the first default on this memo"
+        ],
+        "vocabulary": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Whisperflow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Billy Flow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "correct",
+            "observed_errors": []
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": []
+          }
+        ],
+        "scores": {
+          "accuracy": 3,
+          "vocabulary": 3,
+          "readability": 4,
+          "latency": 2,
+          "hallucination_risk": 1
+        }
+      }
+    }
+  ],
+  "style_results": [
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::verbatim-context-corrected",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "verbatim-context-corrected",
+      "style_label": "Verbatim, context-corrected",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.668908332940191,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "verbatim-context-corrected.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It would be similar to Wispr Flow, but not quite Wispr Flow because we would call it Billie Flow. The whole premise is that it would run using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 3,
+        "sort_score": 17,
+        "summary": "Best audit-style candidate; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 4,
+          "voice_preservation": 5,
+          "style_fit": 4,
+          "invention_risk": 1
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::light-cleanup",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "light-cleanup",
+      "style_label": "Light cleanup",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6186839160509408,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "light-cleanup.v1",
+      "output": "Okay, so I'm just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It's similar to Wispr Flow, but not quite Wispr Flow. We'll call it Billie Flow. The premise is that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 1,
+        "sort_score": 18,
+        "summary": "Best default-style candidate; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 5,
+          "voice_preservation": 4,
+          "style_fit": 5,
+          "invention_risk": 1
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::message",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "message",
+      "style_label": "Message",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.5155593330273405,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "message.v1",
+      "output": "I'm just going to ramble a bit to see how good the voice memo quality is. I want to build a local voice clone project. It'll be similar to Billie Flow but not quite the same as Wispr Flow. It'll use a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 7,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 4,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 1
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::email",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "email",
+      "style_label": "Email",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6010247078957036,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "email.v1",
+      "output": "Hello,\n\nI'm going to ramble a bit to see how well this voice memo captures the quality. Essentially, I want to create a local voice clone. It would be similar to Wispr Flow but not quite, as we'll call it Billie Flow. The premise is that it would run on my MacBook using a local LLM.\n\nThank you.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 17,
+        "sort_score": 14,
+        "summary": "Useful style-specific transform; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 4,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::notes",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "notes",
+      "style_label": "Notes",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.4119204169837758,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "notes.v1",
+      "output": "- Start rambling for a bit to assess voice memo quality\n- Goal: Build a local voice clone\n- Project name: Billie Flow\n- Premise: Local LLM on MacBook",
+      "postprocess_corrections": [
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 5,
+        "sort_score": 16,
+        "summary": "Useful for scanning, less useful for fidelity review; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 5,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 1
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::blog-draft",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "blog-draft",
+      "style_label": "Blog draft",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6164474999532104,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "blog-draft.v1",
+      "output": "Okay, so I'm just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It would be similar to Wispr Flow, but not quite Wispr Flow. We would call it Billie Flow. The premise is that it would run using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 18,
+        "sort_score": 14,
+        "summary": "Useful style-specific transform; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 4,
+          "voice_preservation": 4,
+          "style_fit": 3,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::command",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "command",
+      "style_label": "Command",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6275883330963552,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "command.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone project. It would be similar to Wispr Flow, but not quite Wispr Flow. We would call it Billie Flow. The premise is that it would run using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 21,
+        "sort_score": 13,
+        "summary": "Useful as an advanced mode, not the first default; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 4,
+          "voice_preservation": 2,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-small-text::verbatim-context-corrected",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "verbatim-context-corrected",
+      "style_label": "Verbatim, context-corrected",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6289510419592261,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "verbatim-context-corrected.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone project. It would be similar to the Billie Flow, but not quite with the flow. The premise is that it would run using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 37,
+        "sort_score": 12,
+        "summary": "Best audit-style candidate; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 3,
+          "usefulness": 3,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Still contains an ASR vocabulary error",
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-small-text::light-cleanup",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "light-cleanup",
+      "style_label": "Light cleanup",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.5816772499820217,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "light-cleanup.v1",
+      "output": "Okay, so I'm just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It would be similar to Wispr Flow but not quite with Billie Flow. The whole premise is to run it on my MacBook using LLM.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisper Flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        },
+        {
+          "from": "Macbook",
+          "to": "MacBook",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 8,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 4,
+          "style_fit": 5,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-small-text::message",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "message",
+      "style_label": "Message",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.4803325410466641,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "message.v1",
+      "output": "I'm going to ramble a bit to see how good the voice memo quality is. I want to build a local voice clone project. It'll be like Wispr Flow but not quite with Billie Flow. The premise is using LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisper Flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 38,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-small-text::email",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "email",
+      "style_label": "Email",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.5713450839975849,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "email.v1",
+      "output": "Hello,\n\nI'm going to ramble a bit to see how well this voice memo captures the quality. Essentially, I want to create a local voice clone. It would be similar to the Wispr Flow but not quite as smooth. We would call it Billie Flow. The premise is to run this locally on my MacBook.\n\nThank you.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisper Flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 53,
+        "sort_score": 11,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-small-text::notes",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "notes",
+      "style_label": "Notes",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.6534555839607492,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "notes.v1",
+      "output": "- **Introduction**: \n  - Speaker is rambling to assess the quality of a voice memo.\n  - Speaker wants to create a local voice clone.\n  - The project will use LLM on a MacBook.\n\n- **Project Name**: \n  - Speaker calls it \"Billie Flow\" instead of \"Wispr Flow.\"\n\n- **Project Concept**: \n  - The project will be a local voice clone.\n  - It will use LLM on a MacBook.\n\n- **Project Goal**: \n  - To create a local voice clone.\n  - The premise is to make it similar to \"Wispr Flow\" but not exactly the same.\n\n- **Project Details**: \n  - The project will be built locally.\n  - It will use LLM on a MacBook.\n\n- **Project Name**: \n  - Speaker calls it \"Billie Flow\" instead of \"Wispr Flow.\"\n\n- **Project Concept**: \n  - The project will be a local voice clone.\n  - It will use LLM on a MacBook.\n\n- **Project Goal**: \n  - To create a local voice clone.\n  - The premise is to make it similar to \"Wispr Flow\" but not exactly the same.\n\n- **Project Details**: \n  - The project will be built locally.\n  - It will",
+      "postprocess_corrections": [
+        {
+          "from": "Whisper Flow",
+          "to": "Wispr Flow",
+          "count": 4
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 2
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 22,
+        "sort_score": 13,
+        "summary": "Useful for scanning, less useful for fidelity review; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-small-text::blog-draft",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "blog-draft",
+      "style_label": "Blog draft",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6775188330793753,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "blog-draft.v1",
+      "output": "Okay, so I'm just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a project where we create a local voice clone. It's similar to Wispr Flow, but not quite with Flow. We would call it Billie Flow. The whole premise is to run it using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisper Flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 54,
+        "sort_score": 11,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 4,
+          "style_fit": 3,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-small-text::command",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "command",
+      "style_label": "Command",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6524091670289636,
+      "model_load_seconds": 0.4764702079119161,
+      "prompt_id": "command.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone project. It would be similar to the Billie Flow, but not quite with the flow. The premise is that it would run using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 67,
+        "sort_score": 9,
+        "summary": "Useful as an advanced mode, not the first default; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 3,
+          "usefulness": 3,
+          "voice_preservation": 2,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Still contains an ASR vocabulary error",
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-small-text::verbatim-context-corrected",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "verbatim-context-corrected",
+      "style_label": "Verbatim, context-corrected",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.726632583886385,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "verbatim-context-corrected.v1",
+      "output": "Okay, so I'm just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. Similar to Billie Flow, but not quite Billie Flow. I've been working on it because I call it Billie Flow, and the whole premise is that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 3
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 23,
+        "sort_score": 13,
+        "summary": "Best audit-style candidate; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-small-text::light-cleanup",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "light-cleanup",
+      "style_label": "Light cleanup",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6386065830010921,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "light-cleanup.v1",
+      "output": "Okay, so I'm just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It's similar to Wispr Flow, but not quite like that. I've been working on it, and the whole premise is to run it on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 19,
+        "sort_score": 14,
+        "summary": "Useful style-specific transform; source ASR errors still leak through.",
+        "scores": {
+          "fidelity": 3,
+          "usefulness": 4,
+          "voice_preservation": 4,
+          "style_fit": 5,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-small-text::message",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "message",
+      "style_label": "Message",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.5634297500364482,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "message.v1",
+      "output": "Okay, so I'm just going to ramble a bit and see how good the quality is. Essentially, I want to build a local voice clone project. It's similar to Billie Flow but not quite like Wispr Flow. I've been working on it with LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 39,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-small-text::email",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "email",
+      "style_label": "Email",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6120812079170719,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "email.v1",
+      "output": "Hello,\n\nI'm going to ramble a bit to see how good the quality of this voice memo is. Essentially, I want to build a local voice clone project. It's similar to Wispr Flow but not quite the same. The premise is that it would run using a local LLM on my MacBook.\n\nThank you.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 55,
+        "sort_score": 11,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-small-text::notes",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "notes",
+      "style_label": "Notes",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.8541885000886396,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "notes.v1",
+      "output": "- **Introduction**: \n  - Speaker is experimenting with voice memo quality.\n  - Speaker wants to create a local voice clone.\n  - Speaker compares to \"Wispr Flow\" but aims to be different.\n\n- **Project Concept**:\n  - Speaker plans to use a local LLM on their MacBook.\n\n- **Details**:\n  - Speaker wants to call it \"Billie Flow.\"\n  - Speaker aims to be distinct from \"Wispr Flow.\"\n  - Speaker uses \"local LLM\" on their MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 24,
+        "sort_score": 13,
+        "summary": "Useful for scanning, less useful for fidelity review; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-small-text::blog-draft",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "blog-draft",
+      "style_label": "Blog draft",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.7597056250087917,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "blog-draft.v1",
+      "output": "Okay, so I'm just going to ramble a little bit and see how good the quality of this voice memo is. I suppose, essentially, I want to build a local voice clone. Similar to Wispr Flow, but not quite the same. I've been working on it, but not quite Wispr Flow. We would call it Billie Flow. The whole premise is that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "with the flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 56,
+        "sort_score": 11,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 4,
+          "style_fit": 3,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-small-text::command",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "command",
+      "style_label": "Command",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.5951518329093233,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "command.v1",
+      "output": "Okay, so I'm going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It's similar to Billie Flow but not quite Billie Flow. I've been working on it with LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 2
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 63,
+        "sort_score": 10,
+        "summary": "Useful as an advanced mode, not the first default; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 2,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-small-text::verbatim-context-corrected",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "verbatim-context-corrected",
+      "style_label": "Verbatim, context-corrected",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6097927499795333,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "verbatim-context-corrected.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It would be similar to Billie Flow, but not quite Billie Flow. The premise is that it would run using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "BillyFlow",
+          "to": "Billie Flow",
+          "count": 2
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 25,
+        "sort_score": 13,
+        "summary": "Best audit-style candidate; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-small-text::light-cleanup",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "light-cleanup",
+      "style_label": "Light cleanup",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6524755420396104,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "light-cleanup.v1",
+      "output": "Okay, so I'm just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It would be similar to Wispr Flow, but not quite Wispr Flow. We would call it Billie Flow. The premise is that it would run using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "BillyFlow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 9,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 4,
+          "style_fit": 5,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-small-text::message",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "message",
+      "style_label": "Message",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.48765483300667256,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "message.v1",
+      "output": "I'm going to ramble a bit to see how good the voice memo quality is. I want to build a local voice clone, similar to Billie Flow but not quite. It'll use a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "BillyFlow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 40,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-small-text::email",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "email",
+      "style_label": "Email",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6413339580176398,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "email.v1",
+      "output": "Hello,\n\nI'm going to ramble a bit to see how well this voice memo captures the quality. Essentially, I want to create a local voice clone. It would be similar to Wispr Flow but not quite that. We would call it Billie Flow. The premise is that it would run on my MacBook using a local LLM.\n\nThank you.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "BillyFlow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 57,
+        "sort_score": 11,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-small-text::notes",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "notes",
+      "style_label": "Notes",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.4308890840038657,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "notes.v1",
+      "output": "- Rambled for a bit to assess voice memo quality\n- Goal: Build a local voice clone\n- Project name: Billie Flow\n- Premise: Local LLM on MacBook",
+      "postprocess_corrections": [
+        {
+          "from": "BillyFlow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 26,
+        "sort_score": 13,
+        "summary": "Useful for scanning, less useful for fidelity review; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-small-text::blog-draft",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "blog-draft",
+      "style_label": "Blog draft",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6510023749433458,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "blog-draft.v1",
+      "output": "Okay, so I'm just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It would be similar to Wispr Flow, but not quite that. We would call it Billie Flow. The premise is that it would run using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "BillyFlow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 58,
+        "sort_score": 11,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 4,
+          "style_fit": 3,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-small-text::command",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "command",
+      "style_label": "Command",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.4881847919896245,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "command.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone using a local LLM on my MacBook.",
+      "postprocess_corrections": [],
+      "errors": [],
+      "review": {
+        "rank": 68,
+        "sort_score": 9,
+        "summary": "Useful as an advanced mode, not the first default; source ASR errors still leak through.",
+        "scores": {
+          "fidelity": 3,
+          "usefulness": 3,
+          "voice_preservation": 2,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": []
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-small-text::verbatim-context-corrected",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "verbatim-context-corrected",
+      "style_label": "Verbatim, context-corrected",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6716806249460205,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "verbatim-context-corrected.v1",
+      "output": "Okay, so I'm just gonna ramble for a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It would be similar to Wispr Flow but not quite Wispr Flow because we would call it Billie Flow. The whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 27,
+        "sort_score": 13,
+        "summary": "Best audit-style candidate; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-small-text::light-cleanup",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "light-cleanup",
+      "style_label": "Light cleanup",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.5863224170170724,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "light-cleanup.v1",
+      "output": "Okay, so I'm just gonna ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It's similar to Billie Flow but not quite Billie Flow. The premise is that it uses a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 2
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 10,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 4,
+          "style_fit": 5,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-small-text::message",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "message",
+      "style_label": "Message",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6004426669096574,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "message.v1",
+      "output": "Okay, so I'm just gonna ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone project. It's similar to Billie Flow but not quite like Wispr Flow. The premise is that it uses a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 41,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-small-text::email",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "email",
+      "style_label": "Email",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.6207825419260189,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "email.v1",
+      "output": "Hello,\n\nI'm going to ramble a bit and see how well this voice memo captures the quality. Essentially, I want to build a local voice clone. It's similar to Wispr Flow but not quite that. We'll call it Billie Flow. The premise is that it uses a local LLM on my MacBook.\n\nThanks!",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 59,
+        "sort_score": 11,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-small-text::notes",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "notes",
+      "style_label": "Notes",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.4530466669239104,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "notes.v1",
+      "output": "- Rambles for a bit to assess voice memo quality\n- Aspires to create a local voice clone\n- Similar to Wispr Flow but not quite\n- Project uses LLM on MacBook",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 28,
+        "sort_score": 13,
+        "summary": "Useful for scanning, less useful for fidelity review; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-small-text::blog-draft",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "blog-draft",
+      "style_label": "Blog draft",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.7156625000061467,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "blog-draft.v1",
+      "output": "Okay, so I'm just gonna ramble a little bit and see how good the quality of this voice memo is. Um, so essentially, I wanted to build a project where we were making a local voice clone. Um, so similar to Wispr Flow but not quite Wispr Flow because we would call it Billie Flow. Um, and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 60,
+        "sort_score": 11,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 4,
+          "style_fit": 3,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-small-text::command",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "command",
+      "style_label": "Command",
+      "cleanup_model_id": "mlx-local-small-text",
+      "cleanup_model_label": "MLX local small text",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 0.48467487492598593,
+      "model_load_seconds": 0.5837498330511153,
+      "prompt_id": "command.v1",
+      "output": "Okay, so I am just gonna ramble for a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone using a local LLM on my MacBook.",
+      "postprocess_corrections": [],
+      "errors": [],
+      "review": {
+        "rank": 69,
+        "sort_score": 9,
+        "summary": "Useful as an advanced mode, not the first default; source ASR errors still leak through.",
+        "scores": {
+          "fidelity": 3,
+          "usefulness": 3,
+          "voice_preservation": 2,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": []
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::verbatim-context-corrected",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "verbatim-context-corrected",
+      "style_label": "Verbatim, context-corrected",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.67220679204911,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "verbatim-context-corrected.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially, let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow, but not quite Wispr Flow because we would call it Billie Flow, and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 4,
+        "sort_score": 17,
+        "summary": "Best audit-style candidate; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 4,
+          "voice_preservation": 5,
+          "style_fit": 4,
+          "invention_risk": 1
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::light-cleanup",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "light-cleanup",
+      "style_label": "Light cleanup",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.6061422500060871,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "light-cleanup.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially, let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow, but not quite Wispr Flow because we would call it Billie Flow, and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 2,
+        "sort_score": 18,
+        "summary": "Best default-style candidate; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 5,
+          "voice_preservation": 4,
+          "style_fit": 5,
+          "invention_risk": 1
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::message",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "message",
+      "style_label": "Message",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.5584300420014188,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "message.v1",
+      "output": "Okay, so I'm just going to ramble a bit to see how good the quality of this voice memo is. So essentially, let's say I wanted to build a project where we're making a local voice clone. So similar to Wispr Flow, but not quite Wispr Flow because we'd call it Billie Flow, and the whole premise is that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 11,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 4,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 1
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::email",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "email",
+      "style_label": "Email",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.6381069580093026,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "email.v1",
+      "output": "Subject: Voice Memo Test  \n\nHi,  \n\nI\u2019m just going to ramble a bit to see how good the quality of this voice memo is. So essentially, let\u2019s say I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow, but not quite Wispr Flow because we would call it Billie Flow, and the whole premise would be that it runs using a local LLM on my MacBook.  \n\nThanks.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 12,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 4,
+          "voice_preservation": 4,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::notes",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "notes",
+      "style_label": "Notes",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.5355458329431713,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "notes.v1",
+      "output": "- Project Concept  \n  - Building a local voice clone project  \n  - Similar to Wispr Flow but not exactly Wispr Flow  \n  - Named Billie Flow  \n\n- Key Features  \n  - Runs using a local LLM  \n  - Utilizes MacBook for processing  \n\n- Uncertainty  \n  - Exact implementation details not specified  \n  - Potential challenges in local LLM integration  \n  - Quality of voice memo not fully assessed",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 6,
+        "sort_score": 16,
+        "summary": "Useful for scanning, less useful for fidelity review; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 5,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 1
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::blog-draft",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "blog-draft",
+      "style_label": "Blog draft",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.6353355000028387,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "blog-draft.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially, let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow, but not quite Wispr Flow because we would call it Billie Flow, and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 13,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 4,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::command",
+      "source_asr_id": "mlx-whisper-large-v3-turbo",
+      "source_asr_label": "MLX Whisper large-v3-turbo",
+      "style_id": "command",
+      "style_label": "Command",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.667596457991749,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "command.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially, let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow, but not quite Wispr Flow because we would call it Billie Flow, and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [],
+      "errors": [],
+      "review": {
+        "rank": 29,
+        "sort_score": 13,
+        "summary": "Useful as an advanced mode, not the first default; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 5,
+          "usefulness": 4,
+          "voice_preservation": 2,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": []
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-strong-text::verbatim-context-corrected",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "verbatim-context-corrected",
+      "style_label": "Verbatim, context-corrected",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.6267077920492738,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "verbatim-context-corrected.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow but not quite with flow because we would call it Billie Flow. The whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "whisper flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        },
+        {
+          "from": "LLL",
+          "to": "LLM",
+          "count": 1
+        },
+        {
+          "from": "Macbook",
+          "to": "MacBook",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 42,
+        "sort_score": 12,
+        "summary": "Best audit-style candidate; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 3,
+          "usefulness": 3,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Still contains an ASR vocabulary error",
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-strong-text::light-cleanup",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "light-cleanup",
+      "style_label": "Light cleanup",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.5935041250195354,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "light-cleanup.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow but not quite with flow because we would call it Billie Flow. The whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "whisper flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 20,
+        "sort_score": 14,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 3,
+          "usefulness": 4,
+          "voice_preservation": 4,
+          "style_fit": 5,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Still contains an ASR vocabulary error",
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-strong-text::message",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "message",
+      "style_label": "Message",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.4724521660245955,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "message.v1",
+      "output": "Okay, so I'm just going to ramble a bit to see how good the quality of this voice memo is. Essentially, let's say I wanted to build a project where we're making a local voice clone. So similar to Wispr Flow but not quite with Flow because we'd call it Billie Flow. The whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisper Flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 43,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-strong-text::email",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "email",
+      "style_label": "Email",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.7075869590044022,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "email.v1",
+      "output": "Subject: Voice Memo Test  \n\nHi,  \n\nI\u2019m just going to ramble a bit to see how good the quality of this voice memo is. So essentially, let\u2019s say I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow but not quite with flow because we would call it Billie Flow. The whole premise would be that it runs using a local LLM on my MacBook.  \n\nThanks.",
+      "postprocess_corrections": [],
+      "errors": [],
+      "review": {
+        "rank": 61,
+        "sort_score": 11,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 3,
+          "usefulness": 3,
+          "voice_preservation": 4,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Still contains an ASR vocabulary error"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-strong-text::notes",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "notes",
+      "style_label": "Notes",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.0384539169026539,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "notes.v1",
+      "output": "- Project Idea  \n  - Build a local voice clone project  \n  - Similar to Wispr Flow but not exactly with Flow  \n  - Named Billie Flow instead  \n  - Use local LLM  \n  - Run on MacBook",
+      "postprocess_corrections": [
+        {
+          "from": "Whisper Flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 30,
+        "sort_score": 13,
+        "summary": "Useful for scanning, less useful for fidelity review; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-strong-text::blog-draft",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "blog-draft",
+      "style_label": "Blog draft",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.661079250043258,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "blog-draft.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow but not quite with flow because we would call it Billie Flow. The whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "whisper flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "billy flow",
+          "to": "Billie Flow",
+          "count": 1
+        },
+        {
+          "from": "lll",
+          "to": "LLM",
+          "count": 1
+        },
+        {
+          "from": "macbook",
+          "to": "MacBook",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 62,
+        "sort_score": 11,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 3,
+          "usefulness": 3,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Still contains an ASR vocabulary error",
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny::mlx-local-strong-text::command",
+      "source_asr_id": "mlx-whisper-tiny",
+      "source_asr_label": "MLX Whisper tiny",
+      "style_id": "command",
+      "style_label": "Command",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.675410958006978,
+      "model_load_seconds": 0.6026399170514196,
+      "prompt_id": "command.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow but not quite with flow because we would call it Billie Flow. The whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "whisper flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "billy flow",
+          "to": "Billie Flow",
+          "count": 1
+        },
+        {
+          "from": "lll",
+          "to": "LLM",
+          "count": 1
+        },
+        {
+          "from": "macbook",
+          "to": "MacBook",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 70,
+        "sort_score": 9,
+        "summary": "Useful as an advanced mode, not the first default; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 3,
+          "usefulness": 3,
+          "voice_preservation": 2,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Still contains an ASR vocabulary error",
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-strong-text::verbatim-context-corrected",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "verbatim-context-corrected",
+      "style_label": "Verbatim, context-corrected",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 2.1825656670844182,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "verbatim-context-corrected.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and um see how good the quality of this uh voice memo is, I suppose. Um so, essentially, let's say that I wanted to build a um project where we are making a local voice clone. Um so, similar to Wispr Flow but not quite Wispr Flow because exactly. I've been not quite Wispr Flow because, we would call it, Billie Flow, um, and the whole premise would be that it runs, um, using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "with the flow",
+          "to": "Wispr Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 31,
+        "sort_score": 13,
+        "summary": "Best audit-style candidate; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-strong-text::light-cleanup",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "light-cleanup",
+      "style_label": "Light cleanup",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.9750701659359038,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "light-cleanup.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is. So, essentially, let's say that I wanted to build a project where we are making a local voice clone. So, similar to Wispr Flow but not quite Wispr Flow because exactly. I've been not quite Wispr Flow because, we would call it, Billie Flow, and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisper Flow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "with the flow",
+          "to": "Wispr Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 14,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 4,
+          "style_fit": 5,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-strong-text::message",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "message",
+      "style_label": "Message",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.7270593339344487,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "message.v1",
+      "output": "Okay, so I'm just going to ramble a bit and see how good the quality of this voice memo is. So, essentially, let's say I wanted to build a project where we're making a local voice clone. So, similar to Wispr Flow but not quite Wispr Flow because exactly. I've been not quite Wispr Flow because, we would call it, Billie Flow, and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisper Flow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "with the flow",
+          "to": "Wispr Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 44,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-strong-text::email",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "email",
+      "style_label": "Email",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.9769646250642836,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "email.v1",
+      "output": "Subject: Voice Memo Test  \n\nHi,  \n\nI\u2019m just going to ramble a bit and see how good the quality of this voice memo is. So, essentially, let\u2019s say I wanted to build a project where we\u2019re making a local voice clone. So, similar to Wispr Flow but not quite Wispr Flow because exactly. I\u2019ve been not quite Wispr Flow because, we would call it, Billie Flow. The whole premise would be that it runs using a local LLM on my MacBook.  \n\nThanks.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "with the flow",
+          "to": "Wispr Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 45,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 4,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-strong-text::notes",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "notes",
+      "style_label": "Notes",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.5314329999964684,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "notes.v1",
+      "output": "- Project Idea  \n  - Build a local voice clone project  \n  - Similar to Wispr Flow but not exactly Wispr Flow  \n  - Called Billie Flow  \n\n- Technical Details  \n  - Uses a local LLM  \n  - Runs on MacBook  \n\n- Uncertainty  \n  - Not quite Wispr Flow  \n  - Unclear on the exact nature of the project",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "with the flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 32,
+        "sort_score": 13,
+        "summary": "Useful for scanning, less useful for fidelity review; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-strong-text::blog-draft",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "blog-draft",
+      "style_label": "Blog draft",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 2.1425902500050142,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "blog-draft.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and um see how good the quality of this uh voice memo is, I suppose. Um so, essentially, let's say that I wanted to build a um project where we are making a local voice clone. Um so, similar to Wispr Flow but not quite Wispr Flow because exactly. I've been not quite Wispr Flow because, we would call it, Billie Flow, um, and the whole premise would be that it runs, um, using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "with the flow",
+          "to": "Wispr Flow",
+          "count": 1
+        },
+        {
+          "from": "Billy flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 46,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio::mlx-local-strong-text::command",
+      "source_asr_id": "gemma-4-12b-audio",
+      "source_asr_label": "Gemma 4 12B Audio",
+      "style_id": "command",
+      "style_label": "Command",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 2.177931083017029,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "command.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and um see how good the quality of this uh voice memo is, I suppose. Um so, essentially, let's say that I wanted to build a um project where we are making a local voice clone. Um so, similar to Wispr Flow but not quite Wispr Flow because exactly. I've been not quite Wispr Flow because, we would call it, Billie Flow, um, and the whole premise would be that it runs, um, using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "with the flow",
+          "to": "Wispr Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 64,
+        "sort_score": 10,
+        "summary": "Useful as an advanced mode, not the first default; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 2,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-strong-text::verbatim-context-corrected",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "verbatim-context-corrected",
+      "style_label": "Verbatim, context-corrected",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.7796757499454543,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "verbatim-context-corrected.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially, let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow, but not quite Wispr Flow, because we would call it Billie Flow. and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "BillyFlow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 33,
+        "sort_score": 13,
+        "summary": "Best audit-style candidate; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-strong-text::light-cleanup",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "light-cleanup",
+      "style_label": "Light cleanup",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.8054936670232564,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "light-cleanup.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially, let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow, but not quite Wispr Flow, because we would call it Billie Flow. and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisper Flow",
+          "to": "Wispr Flow",
+          "count": 2
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 15,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 4,
+          "style_fit": 5,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-strong-text::message",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "message",
+      "style_label": "Message",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.678263874957338,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "message.v1",
+      "output": "Okay, so I'm just going to ramble a bit and see how good the quality of this voice memo is. So essentially, let's say I wanted to build a project where we're making a local voice clone. So similar to Wispr Flow, but not quite Wispr Flow, because we'd call it Billie Flow. And the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "BillyFlow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 47,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-strong-text::email",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "email",
+      "style_label": "Email",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.9352993339998648,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "email.v1",
+      "output": "Subject: Voice Memo on Local Voice Clone Project  \n\nHi,  \n\nI\u2019m just going to ramble a bit and see how good the quality of this voice memo is, I suppose. So essentially, let\u2019s say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow, but not quite Wispr Flow, because we would call it Billie Flow. And the whole premise would be that it runs using a local LLM on my MacBook.  \n\nThanks.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "BillyFlow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 48,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 4,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-strong-text::notes",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "notes",
+      "style_label": "Notes",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.7860696660354733,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "notes.v1",
+      "output": "- Project Concept  \n  - Build a local voice clone project  \n  - Similar to Wispr Flow but not exactly Wispr Flow  \n  - Named Billie Flow  \n  - Runs using a local LLM  \n  - Uses MacBook  \n\n- Technical Details  \n  - Utilizes a local LLM  \n  - Operates on MacBook  \n\n- Quality Assessment  \n  - Will ramble to assess voice memo quality  \n  - Testing the quality of the voice memo transcript",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "BillyFlow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 34,
+        "sort_score": 13,
+        "summary": "Useful for scanning, less useful for fidelity review; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-strong-text::blog-draft",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "blog-draft",
+      "style_label": "Blog draft",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.8742910000728443,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "blog-draft.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially, let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow, but not quite Wispr Flow, because we would call it Billie Flow. and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "WhisperFlow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "BillyFlow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 49,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "voxtral-mini-3b::mlx-local-strong-text::command",
+      "source_asr_id": "voxtral-mini-3b",
+      "source_asr_label": "Voxtral Mini 3B",
+      "style_id": "command",
+      "style_label": "Command",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.8978783340426162,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "command.v1",
+      "output": "Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is, I suppose. So essentially, let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow, but not quite Wispr Flow, because we would call it Billie Flow. and the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [],
+      "errors": [],
+      "review": {
+        "rank": 65,
+        "sort_score": 10,
+        "summary": "Useful as an advanced mode, not the first default; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 2,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": []
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-strong-text::verbatim-context-corrected",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "verbatim-context-corrected",
+      "style_label": "Verbatim, context-corrected",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.93218041700311,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "verbatim-context-corrected.v1",
+      "output": "Okay, so I am just gonna ramble for a little bit and um see how good the quality of this uh voice memo is I suppose. Um so essentially let's say that I wanted to build a um project where we were making a local voice clone. Um so similar to Wispr Flow but not quite Wispr Flow because we would call it Billie Flow. Um and the whole premise would be that it runs um using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 35,
+        "sort_score": 13,
+        "summary": "Best audit-style candidate; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-strong-text::light-cleanup",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "light-cleanup",
+      "style_label": "Light cleanup",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.7808412499725819,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "light-cleanup.v1",
+      "output": "Okay, so I am just gonna ramble for a little bit and see how good the quality of this voice memo is. So essentially let's say that I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow but not quite Wispr Flow because we would call it Billie Flow. And the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 16,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 4,
+          "style_fit": 5,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-strong-text::message",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "message",
+      "style_label": "Message",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.7146102089900523,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "message.v1",
+      "output": "Okay, so I'm just gonna ramble a little and see how good the quality of this voice memo is. So essentially, let's say I wanted to build a project where we're making a local voice clone. Similar to Wispr Flow but not quite Wispr Flow because we'd call it Billie Flow. And the whole premise would be that it runs using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 50,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-strong-text::email",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "email",
+      "style_label": "Email",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.883308041957207,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "email.v1",
+      "output": "Subject: Voice Memo Test  \n\nHi,  \n\nI\u2019m just going to ramble a little and see how good the quality of this voice memo is. So essentially, let\u2019s say I wanted to build a project where we were making a local voice clone. So similar to Wispr Flow but not quite Wispr Flow because we would call it Billie Flow. And the whole premise would be that it runs using a local LLM on my MacBook.  \n\nThanks.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 51,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 4,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-strong-text::notes",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "notes",
+      "style_label": "Notes",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.5964742079377174,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "notes.v1",
+      "output": "- Project Concept  \n  - Build a local voice clone project  \n  - Similar to Wispr Flow but not exactly Wispr Flow  \n  - Named Billie Flow  \n\n- Technical Details  \n  - Uses a local LLM  \n  - Runs on MacBook  \n\n- Quality Assessment  \n  - Will ramble for a little bit  \n  - Evaluate the quality of the voice memo",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 36,
+        "sort_score": 13,
+        "summary": "Useful for scanning, less useful for fidelity review; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 4,
+          "voice_preservation": 3,
+          "style_fit": 4,
+          "invention_risk": 2
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-strong-text::blog-draft",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "blog-draft",
+      "style_label": "Blog draft",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.8327982500195503,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "blog-draft.v1",
+      "output": "Okay, so I am just gonna ramble for a little bit and um see how good the quality of this uh voice memo is I suppose. Um so essentially let's say that I wanted to build a um project where we were making a local voice clone. Um so similar to Wispr Flow but not quite Wispr Flow because we would call it Billie Flow. Um and the whole premise would be that it runs um using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 52,
+        "sort_score": 12,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 5,
+          "style_fit": 3,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3::mlx-local-strong-text::command",
+      "source_asr_id": "parakeet-tdt-0.6b-v3",
+      "source_asr_label": "Parakeet TDT 0.6B v3",
+      "style_id": "command",
+      "style_label": "Command",
+      "cleanup_model_id": "mlx-local-strong-text",
+      "cleanup_model_label": "MLX local strong text",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "runtime": "mlx-lm",
+      "status": "complete",
+      "runtime_seconds": 1.8997473750496283,
+      "model_load_seconds": 0.8090192499803379,
+      "prompt_id": "command.v1",
+      "output": "Okay, so I am just gonna ramble for a little bit and um see how good the quality of this uh voice memo is I suppose. Um so essentially let's say that I wanted to build a um project where we were making a local voice clone. Um so similar to Wispr Flow but not quite Wispr Flow because we would call it Billie Flow. Um and the whole premise would be that it runs um using a local LLM on my MacBook.",
+      "postprocess_corrections": [
+        {
+          "from": "Whisperflow",
+          "to": "Wispr Flow",
+          "count": 2
+        },
+        {
+          "from": "Billy Flow",
+          "to": "Billie Flow",
+          "count": 1
+        }
+      ],
+      "errors": [],
+      "review": {
+        "rank": 66,
+        "sort_score": 10,
+        "summary": "Useful as an advanced mode, not the first default; source ASR errors still leak through; keeps the important vocabulary visible.",
+        "scores": {
+          "fidelity": 4,
+          "usefulness": 3,
+          "voice_preservation": 2,
+          "style_fit": 4,
+          "invention_risk": 3
+        },
+        "warnings": [
+          "Uses deterministic vocabulary post-processing"
+        ]
+      }
+    }
+  ],
+  "recommendations": [
+    {
+      "level": "pick",
+      "title": "Default ASR: MLX Whisper large-v3-turbo",
+      "body": "It remains the best first app default: much faster than the native-audio alternatives, coherent, and correct on LLM. It still needs vocabulary correction for Wispr Flow and Billie Flow."
+    },
+    {
+      "level": "pick",
+      "title": "Default cleanup: MLX local small text / light cleanup",
+      "body": "Light cleanup is the right first app default because it removes dictation friction without pretending ASR mistakes did not happen."
+    },
+    {
+      "level": "watch",
+      "title": "Keep vocabulary correction explicit",
+      "body": "The report should keep raw ASR visible. Wispr Flow, Billie Flow, LLM, and MacBook are the terms to bias or repair first."
+    },
+    {
+      "level": "avoid",
+      "title": "Do not ship Gemma, Voxtral, or Parakeet as defaults yet",
+      "body": "They now run locally where public access allows, but they are slower and still miss the key vocabulary. Gemma also depends on the public google/gemma-4-12b-it checkpoint because the originally named google/gemma-4-12b-audio id does not exist."
+    }
+  ],
+  "evaluations": {
+    "asr_rankings": [
+      {
+        "id": "mlx-whisper-large-v3-turbo",
+        "label": "MLX Whisper large-v3-turbo",
+        "status": "complete",
+        "rank": 1,
+        "summary": "Best default ASR result. It is fast, coherent, and hears LLM, but still needs vocabulary correction for Wispr Flow and Billie Flow."
+      },
+      {
+        "id": "parakeet-tdt-0.6b-v3",
+        "label": "Parakeet TDT 0.6B v3",
+        "status": "complete",
+        "rank": 2,
+        "summary": "Strong lab candidate. It preserves filler and timing detail better than Whisper, but is much slower and still misses the product names."
+      },
+      {
+        "id": "voxtral-mini-3b",
+        "label": "Voxtral Mini 3B",
+        "status": "complete",
+        "rank": 3,
+        "summary": "High-readability lab candidate. It produces a clean transcript and gets LLM/MacBook, but the runtime is high and it collapses the project names."
+      },
+      {
+        "id": "gemma-4-12b-audio",
+        "label": "Gemma 4 12B Audio",
+        "status": "complete",
+        "rank": 4,
+        "summary": "Completed, but not default-worthy. The public audio-capable Gemma 4 12B checkpoint ran, but chunk overlap introduced text drift and the path is far slower than Whisper."
+      },
+      {
+        "id": "mlx-whisper-tiny",
+        "label": "MLX Whisper tiny",
+        "status": "complete",
+        "rank": 5,
+        "summary": "Good smoke test, not good enough for quality. It keeps the shape, but loses exactly the project vocabulary this app cares about."
+      }
+    ],
+    "cleanup_rankings": [
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::light-cleanup",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "light-cleanup",
+        "rank": 1,
+        "sort_score": 18,
+        "summary": "Best default-style candidate; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::light-cleanup",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-strong-text",
+        "style_id": "light-cleanup",
+        "rank": 2,
+        "sort_score": 18,
+        "summary": "Best default-style candidate; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::verbatim-context-corrected",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "verbatim-context-corrected",
+        "rank": 3,
+        "sort_score": 17,
+        "summary": "Best audit-style candidate; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::verbatim-context-corrected",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-strong-text",
+        "style_id": "verbatim-context-corrected",
+        "rank": 4,
+        "sort_score": 17,
+        "summary": "Best audit-style candidate; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::notes",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "notes",
+        "rank": 5,
+        "sort_score": 16,
+        "summary": "Useful for scanning, less useful for fidelity review; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::notes",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-strong-text",
+        "style_id": "notes",
+        "rank": 6,
+        "sort_score": 16,
+        "summary": "Useful for scanning, less useful for fidelity review; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::message",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "message",
+        "rank": 7,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-tiny::mlx-local-small-text::light-cleanup",
+        "source_asr_id": "mlx-whisper-tiny",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "light-cleanup",
+        "rank": 8,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible."
+      },
+      {
+        "id": "voxtral-mini-3b::mlx-local-small-text::light-cleanup",
+        "source_asr_id": "voxtral-mini-3b",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "light-cleanup",
+        "rank": 9,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible."
+      },
+      {
+        "id": "parakeet-tdt-0.6b-v3::mlx-local-small-text::light-cleanup",
+        "source_asr_id": "parakeet-tdt-0.6b-v3",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "light-cleanup",
+        "rank": 10,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::message",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-strong-text",
+        "style_id": "message",
+        "rank": 11,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::email",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-strong-text",
+        "style_id": "email",
+        "rank": 12,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; keeps the important vocabulary visible."
+      }
+    ],
+    "recommended_defaults": {
+      "default_asr_backend": "mlx-whisper-large-v3-turbo",
+      "fallback_asr_backend": "mlx-whisper-tiny",
+      "fallback_note": "Tiny is a runner/smoke fallback only, not a quality fallback.",
+      "default_cleanup_model": "mlx-local-small-text",
+      "default_cleanup_style": "light-cleanup",
+      "default_combination_id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::light-cleanup",
+      "advanced_styles": [
+        "verbatim-context-corrected",
+        "message",
+        "email",
+        "notes",
+        "blog-draft",
+        "command"
+      ],
+      "lab_only_asr_backends": [
+        "gemma-4-12b-audio",
+        "voxtral-mini-3b",
+        "parakeet-tdt-0.6b-v3"
+      ]
+    },
+    "blocked_paths": [],
+    "setup_findings": [
+      {
+        "id": "google/gemma-4-12b-audio",
+        "status": "unavailable",
+        "summary": "The originally configured Gemma audio Hub id is not a valid public model identifier. The run used google/gemma-4-12b-it instead and recorded that warning on the ASR result."
+      },
+      {
+        "id": "google/gemma-3n-E4B-it",
+        "status": "gated",
+        "summary": "Gemma 3n E4B is gated and was not available for this run."
+      }
+    ],
+    "lab_only_paths": [
+      {
+        "id": "gemma-4-12b-audio",
+        "label": "Gemma 4 12B Audio",
+        "status": "complete",
+        "summary": "Completed, but not default-worthy. The public audio-capable Gemma 4 12B checkpoint ran, but chunk overlap introduced text drift and the path is far slower than Whisper.",
+        "warnings": [
+          "Original configured Hub id google/gemma-4-12b-audio does not exist; used public audio-capable google/gemma-4-12b-it."
+        ],
+        "runtime_seconds": 258.7937924161088
+      },
+      {
+        "id": "voxtral-mini-3b",
+        "label": "Voxtral Mini 3B",
+        "status": "complete",
+        "summary": "High-readability lab candidate. It produces a clean transcript and gets LLM/MacBook, but the runtime is high and it collapses the project names.",
+        "warnings": [],
+        "runtime_seconds": 110.85089758294635
+      },
+      {
+        "id": "parakeet-tdt-0.6b-v3",
+        "label": "Parakeet TDT 0.6B v3",
+        "status": "complete",
+        "summary": "Strong lab candidate. It preserves filler and timing detail better than Whisper, but is much slower and still misses the product names.",
+        "warnings": [],
+        "runtime_seconds": 42.81342004099861
+      }
+    ],
+    "cleanup_model_blockers": [
+      {
+        "cleanup_model_id": "mlx-local-strong-text",
+        "cleanup_model_label": "MLX local strong text",
+        "model_ref": "mlx-community/gemma-4-12B-it-4bit",
+        "status": "blocked",
+        "errors": [
+          "mlx-lm 0.31.3 cannot load model_type gemma4_unified.",
+          "The cached Gemma 4 text checkpoint was not used as the strong cleanup model."
+        ]
+      }
+    ],
+    "vocabulary_failures": [
+      {
+        "asr_id": "mlx-whisper-large-v3-turbo",
+        "findings": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Whisperflow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Billy Flow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "correct",
+            "observed_errors": []
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": []
+          }
+        ]
+      },
+      {
+        "asr_id": "mlx-whisper-tiny",
+        "findings": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "whisper flow",
+              "with flow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Billy Flow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "LLL"
+            ]
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": [
+              "Macbook"
+            ]
+          }
+        ]
+      },
+      {
+        "asr_id": "gemma-4-12b-audio",
+        "findings": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "WhisperFlow",
+              "with the flow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Billy flow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "correct",
+            "observed_errors": []
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": []
+          }
+        ]
+      },
+      {
+        "asr_id": "voxtral-mini-3b",
+        "findings": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "WhisperFlow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "BillyFlow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "correct",
+            "observed_errors": []
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": []
+          }
+        ]
+      },
+      {
+        "asr_id": "parakeet-tdt-0.6b-v3",
+        "findings": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Whisperflow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Billy Flow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "correct",
+            "observed_errors": []
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": []
+          }
+        ]
+      }
+    ]
+  }
+}

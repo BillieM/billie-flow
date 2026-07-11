@@ -1,0 +1,39 @@
+{
+  "styles": [
+    {
+      "id": "verbatim-context-corrected",
+      "label": "Verbatim, context-corrected",
+      "prompt": "Clean obvious transcription glitches and punctuation only. Preserve wording, order, uncertainty, repetitions, and roughness."
+    },
+    {
+      "id": "light-cleanup",
+      "label": "Light cleanup",
+      "prompt": "Make the transcript easier to read while preserving the speaker's wording, intent, and level of certainty. Remove filler only when it clearly adds no meaning."
+    },
+    {
+      "id": "message",
+      "label": "Message",
+      "prompt": "Rewrite as a concise casual message. Keep the speaker's meaning and do not add claims."
+    },
+    {
+      "id": "email",
+      "label": "Email",
+      "prompt": "Rewrite as a clear email draft with a direct opening, readable paragraphs, and a practical close. Do not invent details."
+    },
+    {
+      "id": "notes",
+      "label": "Notes",
+      "prompt": "Turn the transcript into structured notes with short headings and bullets. Preserve unresolved questions and uncertainty."
+    },
+    {
+      "id": "blog-draft",
+      "label": "Blog draft",
+      "prompt": "Shape the transcript into a rough blog-draft section. Preserve the speaker's actual thinking, caveats, and contradictions. Avoid generic polished AI writing."
+    },
+    {
+      "id": "command",
+      "label": "Command",
+      "prompt": "Interpret the transcript as an instruction for a local app or coding agent. Keep uncertainty visible, do not invent constraints, and make the requested action concrete."
+    }
+  ]
+}

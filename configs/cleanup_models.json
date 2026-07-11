@@ -1,0 +1,34 @@
+{
+  "models": [
+    {
+      "id": "mlx-local-small-text",
+      "label": "MLX local small text",
+      "runtime": "mlx-lm",
+      "model_ref": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+      "role": "cleanup",
+      "priority": "required",
+      "max_tokens": 260,
+      "notes": "Fast local cleanup baseline."
+    },
+    {
+      "id": "mlx-local-strong-text",
+      "label": "MLX local strong text",
+      "runtime": "mlx-lm",
+      "model_ref": "mlx-community/Qwen3-4B-4bit",
+      "role": "cleanup",
+      "priority": "required",
+      "max_tokens": 320,
+      "notes": "Higher-quality local cleanup candidate selected after the cached Gemma 4 text checkpoint failed to load with the installed mlx-lm runtime.",
+      "blocked_candidates": [
+        {
+          "model_ref": "mlx-community/gemma-4-12B-it-4bit",
+          "status": "blocked",
+          "errors": [
+            "mlx-lm 0.31.3 cannot load model_type gemma4_unified.",
+            "The cached Gemma 4 text checkpoint was not used as the strong cleanup model."
+          ]
+        }
+      ]
+    }
+  ]
+}

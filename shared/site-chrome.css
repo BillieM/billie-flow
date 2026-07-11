@@ -1,0 +1,118 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f7f7f4;
+  --ink: #18181b;
+  --muted: #6d6d74;
+  --line: #d8d8d2;
+  --panel: #ffffff;
+  --accent: #7c6bd9;
+  --accent-soft: #ece8ff;
+  --mark: #eeebff;
+  --code: #eeeeea;
+  --measure: 70ch;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f0f11;
+    --ink: #f2f2f0;
+    --muted: #a0a0a8;
+    --line: #303034;
+    --panel: #17171a;
+    --accent: #c0b4ff;
+    --accent-soft: #242033;
+    --mark: #262238;
+    --code: #1c1c20;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+.site-header,
+.site-width {
+  width: min(100% - 2rem, 58rem);
+  margin-inline: auto;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.15rem 2.25rem;
+  font-size: 0.92rem;
+}
+
+.wordmark {
+  font-size: 1.12rem;
+  font-weight: 780;
+  letter-spacing: 0;
+  text-decoration: none;
+}
+
+.wordmark::after {
+  content: none;
+}
+
+.site-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.7rem 1rem;
+}
+
+.site-header nav a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.16s ease, text-decoration-color 0.16s ease;
+}
+
+.site-header nav a:hover,
+.site-header nav a:focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+}
+
+@media (max-width: 42rem) {
+  .site-header {
+    align-items: flex-start;
+    padding-bottom: 1.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}

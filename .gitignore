@@ -1,0 +1,22 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+
+.venv/
+.cache/
+models/
+node_modules/
+dist/
+.env
+.env.*
+
+# Raw local runner receipts are kept out of the public repo/artifact.
+experiments/*/raw/
+experiments/*/*/input-16khz.json
+
+*.aac
+*.flac
+*.m4a
+*.mp3
+*.mp4
+*.wav

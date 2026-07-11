@@ -1,0 +1,54 @@
+{
+  "models": [
+    {
+      "id": "mlx-whisper-large-v3-turbo",
+      "label": "MLX Whisper large-v3-turbo",
+      "role": "asr",
+      "runtime": "mlx-whisper",
+      "model_ref": "mlx-community/whisper-large-v3-turbo",
+      "status": "complete",
+      "chunking_strategy": "whole-file",
+      "notes": "Baseline candidate for Apple Silicon. Good first target because the runtime and tooling are mature."
+    },
+    {
+      "id": "gemma-4-12b-audio",
+      "label": "Gemma 4 12B Audio",
+      "role": "asr",
+      "runtime": "transformers",
+      "model_ref": "google/gemma-4-12b-it",
+      "status": "required",
+      "chunking_strategy": "fixed-25s-overlap-2s",
+      "notes": "Interesting native-audio path. The originally named google/gemma-4-12b-audio id does not exist; the public audio-capable Gemma 4 12B IT checkpoint is used for this branch. Requires chunking because audio clips are capped at 30 seconds."
+    },
+    {
+      "id": "voxtral-mini-3b",
+      "label": "Voxtral Mini 3B",
+      "role": "asr",
+      "runtime": "transformers",
+      "model_ref": "mistralai/Voxtral-Mini-3B-2507",
+      "status": "required",
+      "chunking_strategy": "long-form",
+      "notes": "Long-form audio candidate. Worth testing after the baseline works."
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3",
+      "label": "Parakeet TDT 0.6B v3",
+      "role": "asr",
+      "runtime": "nemo",
+      "model_ref": "nvidia/parakeet-tdt-0.6b-v3",
+      "status": "optional",
+      "chunking_strategy": "whole-file",
+      "notes": "Potentially fast with strong timestamps, but the Mac setup may be less pleasant."
+    },
+    {
+      "id": "mlx-whisper-tiny",
+      "label": "MLX Whisper tiny",
+      "role": "asr",
+      "runtime": "mlx-whisper",
+      "model_ref": "mlx-community/whisper-tiny",
+      "status": "complete",
+      "chunking_strategy": "whole-file",
+      "notes": "Smoke-test backend only. Fast enough for harness checks, not enough for quality decisions."
+    }
+  ]
+}

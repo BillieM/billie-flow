@@ -1,0 +1,401 @@
+{
+  "schema_version": "billie-flow.reviews.v1",
+  "evaluations": {
+    "asr_rankings": [
+      {
+        "id": "mlx-whisper-large-v3-turbo",
+        "label": "MLX Whisper large-v3-turbo",
+        "status": "complete",
+        "rank": 1,
+        "summary": "Best default ASR result. It is fast, coherent, and hears LLM, but still needs vocabulary correction for Wispr Flow and Billie Flow."
+      },
+      {
+        "id": "parakeet-tdt-0.6b-v3",
+        "label": "Parakeet TDT 0.6B v3",
+        "status": "complete",
+        "rank": 2,
+        "summary": "Strong lab candidate. It preserves filler and timing detail better than Whisper, but is much slower and still misses the product names."
+      },
+      {
+        "id": "voxtral-mini-3b",
+        "label": "Voxtral Mini 3B",
+        "status": "complete",
+        "rank": 3,
+        "summary": "High-readability lab candidate. It produces a clean transcript and gets LLM/MacBook, but the runtime is high and it collapses the project names."
+      },
+      {
+        "id": "gemma-4-12b-audio",
+        "label": "Gemma 4 12B Audio",
+        "status": "complete",
+        "rank": 4,
+        "summary": "Completed, but not default-worthy. The public audio-capable Gemma 4 12B checkpoint ran, but chunk overlap introduced text drift and the path is far slower than Whisper."
+      },
+      {
+        "id": "mlx-whisper-tiny",
+        "label": "MLX Whisper tiny",
+        "status": "complete",
+        "rank": 5,
+        "summary": "Good smoke test, not good enough for quality. It keeps the shape, but loses exactly the project vocabulary this app cares about."
+      }
+    ],
+    "cleanup_rankings": [
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::light-cleanup",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "light-cleanup",
+        "rank": 1,
+        "sort_score": 18,
+        "summary": "Best default-style candidate; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::light-cleanup",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-strong-text",
+        "style_id": "light-cleanup",
+        "rank": 2,
+        "sort_score": 18,
+        "summary": "Best default-style candidate; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::verbatim-context-corrected",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "verbatim-context-corrected",
+        "rank": 3,
+        "sort_score": 17,
+        "summary": "Best audit-style candidate; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::verbatim-context-corrected",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-strong-text",
+        "style_id": "verbatim-context-corrected",
+        "rank": 4,
+        "sort_score": 17,
+        "summary": "Best audit-style candidate; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::notes",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "notes",
+        "rank": 5,
+        "sort_score": 16,
+        "summary": "Useful for scanning, less useful for fidelity review; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::notes",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-strong-text",
+        "style_id": "notes",
+        "rank": 6,
+        "sort_score": 16,
+        "summary": "Useful for scanning, less useful for fidelity review; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::message",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "message",
+        "rank": 7,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-tiny::mlx-local-small-text::light-cleanup",
+        "source_asr_id": "mlx-whisper-tiny",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "light-cleanup",
+        "rank": 8,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible."
+      },
+      {
+        "id": "voxtral-mini-3b::mlx-local-small-text::light-cleanup",
+        "source_asr_id": "voxtral-mini-3b",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "light-cleanup",
+        "rank": 9,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible."
+      },
+      {
+        "id": "parakeet-tdt-0.6b-v3::mlx-local-small-text::light-cleanup",
+        "source_asr_id": "parakeet-tdt-0.6b-v3",
+        "cleanup_model_id": "mlx-local-small-text",
+        "style_id": "light-cleanup",
+        "rank": 10,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::message",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-strong-text",
+        "style_id": "message",
+        "rank": 11,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; keeps the important vocabulary visible."
+      },
+      {
+        "id": "mlx-whisper-large-v3-turbo::mlx-local-strong-text::email",
+        "source_asr_id": "mlx-whisper-large-v3-turbo",
+        "cleanup_model_id": "mlx-local-strong-text",
+        "style_id": "email",
+        "rank": 12,
+        "sort_score": 15,
+        "summary": "Useful style-specific transform; keeps the important vocabulary visible."
+      }
+    ],
+    "recommended_defaults": {
+      "default_asr_backend": "mlx-whisper-large-v3-turbo",
+      "fallback_asr_backend": "mlx-whisper-tiny",
+      "fallback_note": "Tiny is a runner/smoke fallback only, not a quality fallback.",
+      "default_cleanup_model": "mlx-local-small-text",
+      "default_cleanup_style": "light-cleanup",
+      "default_combination_id": "mlx-whisper-large-v3-turbo::mlx-local-small-text::light-cleanup",
+      "advanced_styles": [
+        "verbatim-context-corrected",
+        "message",
+        "email",
+        "notes",
+        "blog-draft",
+        "command"
+      ],
+      "lab_only_asr_backends": [
+        "gemma-4-12b-audio",
+        "voxtral-mini-3b",
+        "parakeet-tdt-0.6b-v3"
+      ]
+    },
+    "blocked_paths": [],
+    "setup_findings": [
+      {
+        "id": "google/gemma-4-12b-audio",
+        "status": "unavailable",
+        "summary": "The originally configured Gemma audio Hub id is not a valid public model identifier. The run used google/gemma-4-12b-it instead and recorded that warning on the ASR result."
+      },
+      {
+        "id": "google/gemma-3n-E4B-it",
+        "status": "gated",
+        "summary": "Gemma 3n E4B is gated and was not available for this run."
+      }
+    ],
+    "lab_only_paths": [
+      {
+        "id": "gemma-4-12b-audio",
+        "label": "Gemma 4 12B Audio",
+        "status": "complete",
+        "summary": "Completed, but not default-worthy. The public audio-capable Gemma 4 12B checkpoint ran, but chunk overlap introduced text drift and the path is far slower than Whisper.",
+        "warnings": [
+          "Original configured Hub id google/gemma-4-12b-audio does not exist; used public audio-capable google/gemma-4-12b-it."
+        ],
+        "runtime_seconds": 258.7937924161088
+      },
+      {
+        "id": "voxtral-mini-3b",
+        "label": "Voxtral Mini 3B",
+        "status": "complete",
+        "summary": "High-readability lab candidate. It produces a clean transcript and gets LLM/MacBook, but the runtime is high and it collapses the project names.",
+        "warnings": [],
+        "runtime_seconds": 110.85089758294635
+      },
+      {
+        "id": "parakeet-tdt-0.6b-v3",
+        "label": "Parakeet TDT 0.6B v3",
+        "status": "complete",
+        "summary": "Strong lab candidate. It preserves filler and timing detail better than Whisper, but is much slower and still misses the product names.",
+        "warnings": [],
+        "runtime_seconds": 42.81342004099861
+      }
+    ],
+    "cleanup_model_blockers": [
+      {
+        "cleanup_model_id": "mlx-local-strong-text",
+        "cleanup_model_label": "MLX local strong text",
+        "model_ref": "mlx-community/gemma-4-12B-it-4bit",
+        "status": "blocked",
+        "errors": [
+          "mlx-lm 0.31.3 cannot load model_type gemma4_unified.",
+          "The cached Gemma 4 text checkpoint was not used as the strong cleanup model."
+        ]
+      }
+    ],
+    "vocabulary_failures": [
+      {
+        "asr_id": "mlx-whisper-large-v3-turbo",
+        "findings": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Whisperflow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Billy Flow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "correct",
+            "observed_errors": []
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": []
+          }
+        ]
+      },
+      {
+        "asr_id": "mlx-whisper-tiny",
+        "findings": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "whisper flow",
+              "with flow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Billy Flow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "LLL"
+            ]
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": [
+              "Macbook"
+            ]
+          }
+        ]
+      },
+      {
+        "asr_id": "gemma-4-12b-audio",
+        "findings": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "WhisperFlow",
+              "with the flow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Billy flow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "correct",
+            "observed_errors": []
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": []
+          }
+        ]
+      },
+      {
+        "asr_id": "voxtral-mini-3b",
+        "findings": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "WhisperFlow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "BillyFlow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "correct",
+            "observed_errors": []
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": []
+          }
+        ]
+      },
+      {
+        "asr_id": "parakeet-tdt-0.6b-v3",
+        "findings": [
+          {
+            "term": "Wispr Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Whisperflow"
+            ]
+          },
+          {
+            "term": "Billie Flow",
+            "status": "missing-or-wrong",
+            "observed_errors": [
+              "Billy Flow"
+            ]
+          },
+          {
+            "term": "LLM",
+            "status": "correct",
+            "observed_errors": []
+          },
+          {
+            "term": "MacBook",
+            "status": "correct",
+            "observed_errors": []
+          }
+        ]
+      }
+    ]
+  },
+  "recommendations": [
+    {
+      "level": "pick",
+      "title": "Default ASR: MLX Whisper large-v3-turbo",
+      "body": "It remains the best first app default: much faster than the native-audio alternatives, coherent, and correct on LLM. It still needs vocabulary correction for Wispr Flow and Billie Flow."
+    },
+    {
+      "level": "pick",
+      "title": "Default cleanup: MLX local small text / light cleanup",
+      "body": "Light cleanup is the right first app default because it removes dictation friction without pretending ASR mistakes did not happen."
+    },
+    {
+      "level": "watch",
+      "title": "Keep vocabulary correction explicit",
+      "body": "The report should keep raw ASR visible. Wispr Flow, Billie Flow, LLM, and MacBook are the terms to bias or repair first."
+    },
+    {
+      "level": "avoid",
+      "title": "Do not ship Gemma, Voxtral, or Parakeet as defaults yet",
+      "body": "They now run locally where public access allows, but they are slower and still miss the key vocabulary. Gemma also depends on the public google/gemma-4-12b-it checkpoint because the originally named google/gemma-4-12b-audio id does not exist."
+    }
+  ]
+}

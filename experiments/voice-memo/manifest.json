@@ -1,0 +1,145 @@
+{
+  "run": {
+    "id": "voice-memo",
+    "title": "Voice Memo ASR Bake-off",
+    "created_at": "2026-07-08T14:29:02Z",
+    "audio_file": "input.m4a",
+    "duration_seconds": 35.317551,
+    "notes": "Real Voice Memos sample used to compare the first local ASR baseline outputs. The clip is long enough to exercise chunking decisions and contains useful project vocabulary: Wispr Flow, Billie Flow, LLM, and MacBook."
+  },
+  "asr_inputs": [
+    {
+      "id": "mlx-whisper-large-v3-turbo",
+      "label": "MLX Whisper large-v3-turbo",
+      "status": "complete",
+      "install_status": "available",
+      "runtime": "mlx-whisper",
+      "model_ref": "mlx-community/whisper-large-v3-turbo",
+      "chunking_strategy": "whole-file",
+      "raw_json": "raw/asr/mlx-whisper-large-v3-turbo.json",
+      "runtime_seconds": 3.68,
+      "peak_memory_gb": null,
+      "review": {
+        "rank": 1,
+        "summary": "Best current ASR result. It preserves the structure, fixes the LLM acronym, and produces readable punctuation, but still needs custom vocabulary for Wispr Flow and Billie Flow.",
+        "strengths": [
+          "Correctly hears local LLM",
+          "Readable punctuation and casing",
+          "Better confidence than tiny across most project-specific words"
+        ],
+        "weaknesses": [
+          "Normalizes Wispr Flow to Whisperflow",
+          "Writes Billie Flow as Billy Flow",
+          "Still needs a vocabulary/context prompt for product names"
+        ],
+        "scores": {
+          "accuracy": 4,
+          "readability": 5,
+          "latency": 4,
+          "hallucination_risk": 1
+        }
+      }
+    },
+    {
+      "id": "mlx-whisper-tiny",
+      "label": "MLX Whisper tiny",
+      "status": "complete",
+      "install_status": "available",
+      "runtime": "mlx-whisper",
+      "model_ref": "mlx-community/whisper-tiny",
+      "chunking_strategy": "whole-file",
+      "raw_json": "raw/asr/mlx-whisper-tiny.json",
+      "runtime_seconds": 2.0,
+      "peak_memory_gb": null,
+      "review": {
+        "rank": 2,
+        "summary": "Fast and surprisingly coherent, but not good enough for judging dictation quality because it mangles important project vocabulary.",
+        "strengths": [
+          "Very fast warm runtime",
+          "Captures the broad idea",
+          "Useful as a smoke-test backend"
+        ],
+        "weaknesses": [
+          "Hears LLM as LLL",
+          "Splits the Wispr Flow phrase awkwardly",
+          "Lower word confidence around key terms"
+        ],
+        "scores": {
+          "accuracy": 3,
+          "readability": 4,
+          "latency": 5,
+          "hallucination_risk": 2
+        }
+      }
+    },
+    {
+      "id": "gemma-4-12b-audio",
+      "label": "Gemma 4 12B Audio",
+      "status": "complete",
+      "install_status": "available",
+      "raw_json": "raw/asr/gemma-4-12b-audio.json",
+      "runtime_seconds": null,
+      "peak_memory_gb": null,
+      "runtime": "transformers",
+      "model_ref": "google/gemma-4-12b-it",
+      "chunking_strategy": "fixed-25s-overlap-2s",
+      "adapter": {
+        "id": "gemma-4-12b-audio",
+        "kind": "local-transformers-run",
+        "script": "scripts/run_gemma_audio_asr.py"
+      },
+      "errors": [],
+      "warnings": [
+        "Original configured Hub id google/gemma-4-12b-audio does not exist; used public audio-capable google/gemma-4-12b-it."
+      ],
+      "review": {
+        "rank": null,
+        "summary": "Completed local run through the public audio-capable Gemma 4 12B IT checkpoint."
+      }
+    },
+    {
+      "id": "voxtral-mini-3b",
+      "label": "Voxtral Mini 3B",
+      "status": "complete",
+      "install_status": "available",
+      "raw_json": "raw/asr/voxtral-mini-3b.json",
+      "runtime_seconds": null,
+      "peak_memory_gb": null,
+      "runtime": "transformers",
+      "model_ref": "mistralai/Voxtral-Mini-3B-2507",
+      "chunking_strategy": "long-form",
+      "adapter": {
+        "id": "voxtral-mini-3b",
+        "kind": "local-transformers-run",
+        "script": "scripts/run_voxtral_asr.py"
+      },
+      "errors": [],
+      "review": {
+        "rank": null,
+        "summary": "Completed local run through Transformers Voxtral support."
+      }
+    },
+    {
+      "id": "parakeet-tdt-0.6b-v3",
+      "label": "Parakeet TDT 0.6B v3",
+      "status": "complete",
+      "install_status": "available",
+      "raw_json": "raw/asr/parakeet-tdt-0.6b-v3.json",
+      "runtime_seconds": null,
+      "peak_memory_gb": null,
+      "runtime": "nemo",
+      "model_ref": "nvidia/parakeet-tdt-0.6b-v3",
+      "chunking_strategy": "whole-file",
+      "adapter": {
+        "id": "parakeet-tdt-0.6b-v3",
+        "kind": "local-nemo-run",
+        "script": "scripts/run_nemo_parakeet.py"
+      },
+      "errors": [],
+      "review": {
+        "rank": null,
+        "summary": "Completed local run through NeMo ASR."
+      }
+    }
+  ]
+}
