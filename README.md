@@ -1,4 +1,30 @@
-# Billie Flow Lab
+# Billie Flow
+
+Billie Flow now contains the private native macOS v0.1 implementation alongside
+the model-evaluation lab that selected its fixed local models. The app is a
+macOS 26 Swift 6 menu-bar utility: hold a custom global hotkey, speak, release,
+and receive locally transcribed and lightly cleaned text on the clipboard.
+
+Native implementation entry points:
+
+- `app/`: Swift app, Xcode project, and Swift tests.
+- `worker/`: persistent Python 3.12 NDJSON model worker and tests.
+- `contracts/`: frozen `billie-flow.worker.v1` wire contract.
+- `scripts/bootstrap_worker.sh`: idempotent local runtime and model setup.
+- `docs/native-v0.1.md`: architecture, scope, setup, and development.
+- `docs/native-v0.1-qa.md`: automated and manual acceptance checklist.
+
+```sh
+make test
+scripts/bootstrap_worker.sh
+scripts/package_release.sh
+```
+
+The app is local-only and copy-only. It stores no transcript history, does not
+request Accessibility or Input Monitoring, and does not include auto-paste,
+model selection, notarization, an updater, or a public distribution path.
+
+## Model evaluation lab
 
 Billie Flow Lab is a small offline harness for comparing local speech-to-text
 and cleanup models before building the native macOS app.

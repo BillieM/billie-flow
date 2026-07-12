@@ -1,7 +1,8 @@
 # Swift App Plan
 
-The testing phase has now chosen evidence-backed model defaults. The Swift app
-remains deferred while the report and public research snapshot are reviewed.
+The testing phase chose evidence-backed model defaults. This plan is now the
+implemented native v0.1 boundary; see `native-v0.1.md` for setup and runtime
+details.
 
 ## Product Shape
 
@@ -40,10 +41,11 @@ Deferred:
 ```text
 Swift menu bar app
   -> recorder service
-  -> local audio file/chunk buffer
-  -> localhost worker API
-    -> ASR backend
-    -> cleanup backend
+  -> temporary 16 kHz mono PCM WAV
+  -> managed Python child over stdin/stdout NDJSON
+    -> fixed ASR model
+    -> fixed cleanup model
+    -> deterministic corrections
   -> clipboard output
   -> HUD state updates
 ```
@@ -51,23 +53,16 @@ Swift menu bar app
 The worker should remain outside the Swift binary initially. That keeps model
 runtime churn away from the app shell and makes the testing harness reusable.
 
-## Expected Settings
+## v0.1 Settings
 
 Simple settings:
 
 - record hotkey
 - default style
-- default ASR backend
-- default cleanup backend
-- copy-only vs paste mode, once paste exists
+- launch at login, off by default
 
-Advanced settings:
-
-- manual ASR model picker
-- manual cleanup model picker
-- custom vocabulary terms
-- chunking strategy
-- keep raw transcript history
+Model selection, custom vocabulary, auto-paste, and transcript history are out
+of scope rather than hidden advanced settings.
 
 ## Defaults Chosen From Testing
 

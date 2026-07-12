@@ -165,9 +165,30 @@ App implication: debug/test modes can still return raw ASR, raw cleanup model
 output, and final corrected output. The public artifact should render selected
 evidence only.
 
-## Open Decisions
+## 2026-07-12: Freeze Native v0.1 as a Narrow Private Utility
 
-- Should the first app expose manual model selection immediately or hide it
-  behind advanced settings?
-- Whether to add a custom vocabulary editor in the first app or hard-code the
-  first project vocabulary terms in the worker.
+Decision: ship macOS 26-only Swift 6 sources for a menu-bar, hold-to-record,
+copy-only utility backed by one persistent Python 3.12 worker.
+
+The shared process boundary is the frozen `billie-flow.worker.v1` NDJSON
+contract. The first app has exactly three styles and fixed evidence-backed ASR
+and cleanup models. It has no model picker, vocabulary editor, auto-paste,
+transcript history, updater, notarization, App Store path, or public repository.
+
+Reasoning:
+
+- The bake-off already selected the useful fixed defaults.
+- Copy-only avoids Accessibility and Input Monitoring permissions.
+- A small native surface keeps the first acceptance test about dictation quality,
+  latency, lifecycle correctness, and privacy rather than distribution features.
+- Versioned deterministic corrections make known-name repair inspectable without
+  adding first-version vocabulary UI.
+
+## 2026-07-12: App Owns Temporary Audio and Worker Cancellation
+
+Decision: the native app owns every temporary WAV and deletes it after success,
+failure, cancellation, and quit. The worker never deletes input audio.
+
+Cancellation terminates the persistent worker and escalates to kill before the
+app removes the audio. A later recording starts a fresh worker. This gives the
+app one unambiguous lifecycle owner and prevents inference from racing deletion.

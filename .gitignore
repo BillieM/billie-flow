@@ -1,12 +1,19 @@
 .DS_Store
 __pycache__/
 *.py[cod]
+*.egg-info/
 
 .venv/
 .cache/
 models/
 node_modules/
 dist/
+build/
+.swiftpm/
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
 .env
 .env.*
 
