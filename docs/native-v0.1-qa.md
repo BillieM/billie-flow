@@ -55,6 +55,11 @@ Automated and packaging gates:
 - [x] Python 3.12 model-free worker suite: 44 tests passed
 - [x] SwiftPM full app build and suite: 23 tests passed
 - [x] native Xcode `BillieFlow` test action: 23 tests passed on My Mac
+- [x] automated system acceptance: 9 passed, 0 failed, 0 skipped
+- [x] production audio writer integration: 48 kHz stereo Float32 to finalized
+      16 kHz mono interleaved Int16 WAV
+- [x] cancellation kills the worker, deletes request audio, restarts with a new
+      PID, and shuts down without an orphan
 - [x] persistent fake-worker hello/warmup/process/shutdown test passed
 - [x] tiny Whisper plus Qwen smoke passed with non-empty ASR and cleanup
 - [x] existing model-bake-off `results.json` still validates
@@ -72,6 +77,15 @@ ASR 1.239 seconds and cleanup 0.683 seconds. The result had no warning, applied
 three deterministic corrections, disclosed no private audio/transcript content
 on stderr, and the worker exited cleanly with status 0. This passes the warm
 30-second-under-10-seconds requirement.
+
+The final zero-skip automated gate processed a generated 30-second production
+fixture in 1.874 seconds after warmup. It also ran the complete controlled
+failure matrix and opened the packaged app through LaunchServices for three
+seconds before terminating it, with no child process, temporary audio, private
+log content, or new system crash report. An earlier harness revision directly
+executed the GUI binary from a temporary path and triggered an AppKit
+registration abort; this was a harness artifact, not the installed app, and the
+release gate now explicitly monitors the real DiagnosticReports directory.
 
 The final read-only release audit found and then verified fixes for two blockers:
 cleanup generation now detects token-limit termination and falls back to the
@@ -95,8 +109,8 @@ automated structural assertions and are not assigned to the user for testing.
   `/Applications/Billie Flow.app`; its executable hash matches the permanent-path
   `dist/Billie Flow.app`, strict signature verification passes, and it launches
   without spawning the worker before a recording.
-- Final read-only QA found no code blockers. Tagging is gated on a zero-skip
-  automated report and installing the exact current-HEAD artifact.
+- Final read-only QA found no code blockers. The zero-skip automated report has
+  passed and the installed executable matches the current release artifact.
 
 ## Microphone crash fix
 

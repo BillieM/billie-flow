@@ -258,64 +258,89 @@ def pid_alive(pid: int) -> bool:
     return True
 
 
-def process_group_alive(pgid: int) -> bool:
-    try:
-        os.killpg(pgid, 0)
-    except ProcessLookupError:
-        return False
-    return True
+def application_pids(executable: Path) -> set[int]:
+    completed = run_command(["ps", "-axo", "pid=,command="], timeout=15)
+    require(completed.returncode == 0, "process table could not be read")
+    marker = str(executable)
+    result: set[int] = set()
+    for line in completed.stdout.splitlines():
+        fields = line.strip().split(maxsplit=1)
+        if len(fields) == 2 and fields[0].isdigit() and fields[1].startswith(marker):
+            result.add(int(fields[0]))
+    return result
+
+
+def crash_report_names() -> set[str]:
+    reports = Path.home() / "Library/Logs/DiagnosticReports"
+    if not reports.is_dir():
+        return set()
+    return {path.name for path in reports.glob("Billie Flow-*.ips")}
 
 
 def isolated_app_launch(seconds: float) -> str:
     require(DEFAULT_APP.resolve() != INSTALLED_APP.resolve(), "refusing to exercise the installed app")
     executable = DEFAULT_APP / "Contents/MacOS/Billie Flow"
+    installed_executable = INSTALLED_APP / "Contents/MacOS/Billie Flow"
     require(executable.is_file(), "packaged executable is missing")
+    installed_before = application_pids(installed_executable)
+    candidate_before = application_pids(executable)
+    require(not candidate_before, "a packaged-app acceptance instance is already running")
+    crashes_before = crash_report_names()
     with tempfile.TemporaryDirectory(prefix="billie-flow-app-acceptance-") as temporary:
         isolated = Path(temporary)
         home = isolated / "home"
         tmp = isolated / "tmp"
+        stdout_path = isolated / "stdout"
+        stderr_path = isolated / "stderr"
         home.mkdir()
         tmp.mkdir()
-        environment = os.environ.copy()
-        environment.update(
-            {
-                "HOME": str(home),
-                "CFFIXED_USER_HOME": str(home),
-                "TMPDIR": f"{tmp}/",
-                "BILLIE_FLOW_WORKER_EXECUTABLE": str(isolated / "worker-not-used"),
-            }
+        launched = run_command(
+            [
+                "open", "-n", "-g", "-F",
+                "--env", f"HOME={home}",
+                "--env", f"CFFIXED_USER_HOME={home}",
+                "--env", f"TMPDIR={tmp}/",
+                "--env", f"BILLIE_FLOW_WORKER_EXECUTABLE={isolated / 'worker-not-used'}",
+                "-o", str(stdout_path),
+                "--stderr", str(stderr_path),
+                str(DEFAULT_APP),
+            ],
+            timeout=30,
         )
-        child = subprocess.Popen(
-            [str(executable), "-ApplePersistenceIgnoreState", "YES"],
-            cwd=ROOT,
-            env=environment,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            start_new_session=True,
-        )
+        require(launched.returncode == 0, "LaunchServices could not open the packaged app")
+        launch_deadline = time.monotonic() + 5
+        candidate_pids: set[int] = set()
+        while time.monotonic() < launch_deadline:
+            candidate_pids = application_pids(executable) - candidate_before
+            if candidate_pids:
+                break
+            time.sleep(0.1)
+        require(len(candidate_pids) == 1, "packaged app did not produce one isolated process")
+        app_pid = next(iter(candidate_pids))
         try:
             deadline = time.monotonic() + seconds
             while time.monotonic() < deadline:
-                if child.poll() is not None:
+                if not pid_alive(app_pid):
                     raise CheckFailure("isolated Release app terminated during launch smoke")
                 time.sleep(0.1)
         finally:
-            if child.poll() is None:
-                os.killpg(child.pid, signal.SIGTERM)
-                try:
-                    child.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    os.killpg(child.pid, signal.SIGKILL)
-                    child.wait(timeout=5)
-            stdout, stderr = child.communicate(timeout=2)
-
-        require(not process_group_alive(child.pid), "isolated app left a child process behind")
+            if pid_alive(app_pid):
+                os.kill(app_pid, signal.SIGTERM)
+                exit_deadline = time.monotonic() + 5
+                while pid_alive(app_pid) and time.monotonic() < exit_deadline:
+                    time.sleep(0.1)
+                if pid_alive(app_pid):
+                    os.kill(app_pid, signal.SIGKILL)
+        stdout = stdout_path.read_text(encoding="utf-8", errors="replace") if stdout_path.exists() else ""
+        stderr = stderr_path.read_text(encoding="utf-8", errors="replace") if stderr_path.exists() else ""
+        require(not application_pids(executable), "isolated app process remained after termination")
         require(not list(isolated.rglob("*.wav")), "isolated app left temporary audio behind")
-        require(not list(isolated.rglob("*.ips")), "isolated app produced a crash report")
         require(PRIVATE_FAKE_TEXT not in stdout + stderr, "private protocol text appeared in app logs")
 
-    return f"isolated packaged app remained live for {seconds:.1f}s and exited without child/audio/crash residue; installed app was not addressed"
+    time.sleep(1)
+    require(crash_report_names() == crashes_before, "isolated app produced a system crash report")
+    require(application_pids(installed_executable) == installed_before, "installed app process state changed")
+    return f"LaunchServices-opened packaged app remained live for {seconds:.1f}s and exited without process/audio/crash residue; installed app was not addressed"
 
 
 def write_test_wav(path: Path, seconds: float = 0.75) -> None:
