@@ -48,12 +48,18 @@ struct HotKey: Codable, Equatable {
 
 @MainActor
 final class GlobalHotKey {
-    enum RegistrationError: Error { case invalidModifiers, registrationFailed(OSStatus) }
+    enum RegistrationError: Error {
+        case invalidModifiers
+        case handlerInstallationFailed(OSStatus)
+        case registrationFailed(OSStatus)
+    }
 
     var onPressed: (() -> Void)?
     var onReleased: (() -> Void)?
     nonisolated(unsafe) private var hotKeyRef: EventHotKeyRef?
     nonisolated(unsafe) private var handlerRef: EventHandlerRef?
+    private var registeredHotKey: HotKey?
+    private var nextIdentifier: UInt32 = 1
 
     deinit {
         if let hotKeyRef { UnregisterEventHotKey(hotKeyRef) }
@@ -62,28 +68,39 @@ final class GlobalHotKey {
 
     func register(_ hotKey: HotKey) throws {
         guard hotKey.hasRequiredModifier else { throw RegistrationError.invalidModifiers }
-        if let hotKeyRef { UnregisterEventHotKey(hotKeyRef) }
-        installHandlerIfNeeded()
+        guard hotKey != registeredHotKey else { return }
+        try installHandlerIfNeeded()
 
-        let identifier = EventHotKeyID(signature: OSType(0x42464C57), id: 1) // BFLW
+        let identifier = EventHotKeyID(signature: OSType(0x42464C57), id: nextIdentifier) // BFLW
+        var candidateRef: EventHotKeyRef?
         let status = RegisterEventHotKey(
             hotKey.keyCode,
             hotKey.modifiers,
             identifier,
             GetApplicationEventTarget(),
             0,
-            &hotKeyRef
+            &candidateRef
         )
-        guard status == noErr else { throw RegistrationError.registrationFailed(status) }
+        guard status == noErr, let candidateRef else {
+            if let candidateRef { UnregisterEventHotKey(candidateRef) }
+            throw RegistrationError.registrationFailed(status)
+        }
+
+        let previousRef = hotKeyRef
+        hotKeyRef = candidateRef
+        registeredHotKey = hotKey
+        nextIdentifier &+= 1
+        if let previousRef { UnregisterEventHotKey(previousRef) }
     }
 
-    private func installHandlerIfNeeded() {
+    private func installHandlerIfNeeded() throws {
         guard handlerRef == nil else { return }
         var types = [
             EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed)),
             EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyReleased)),
         ]
-        InstallEventHandler(
+        var candidateRef: EventHandlerRef?
+        let status = InstallEventHandler(
             GetApplicationEventTarget(),
             { _, event, context in
                 guard let event, let context else { return OSStatus(eventNotHandledErr) }
@@ -100,7 +117,12 @@ final class GlobalHotKey {
             types.count,
             &types,
             Unmanaged.passUnretained(self).toOpaque(),
-            &handlerRef
+            &candidateRef
         )
+        guard status == noErr, let candidateRef else {
+            if let candidateRef { RemoveEventHandler(candidateRef) }
+            throw RegistrationError.handlerInstallationFailed(status)
+        }
+        handlerRef = candidateRef
     }
 }

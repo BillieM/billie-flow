@@ -14,6 +14,20 @@ public enum FlowState: Equatable, Sendable {
         default: false
         }
     }
+
+    public var allowsRecordingStart: Bool {
+        switch self {
+        case .idle, .copied, .failed: true
+        default: false
+        }
+    }
+
+    public var requiresExplicitDismissal: Bool {
+        switch self {
+        case .copied(warning: .some), .failed: true
+        default: false
+        }
+    }
 }
 
 public enum FlowEvent: Equatable, Sendable {
@@ -38,7 +52,8 @@ public struct FlowStateMachine: Sendable {
     public mutating func handle(_ event: FlowEvent) -> FlowState {
         switch (state, event) {
         case (.needsHotkey, .hotkeyConfigured): state = .idle
-        case (.idle, .recordingStarted): state = .recording
+        case (.idle, .recordingStarted), (.copied, .recordingStarted), (.failed, .recordingStarted):
+            state = .recording
         case (.recording, .recordingStopped): state = .processing(nil)
         case (.processing, let .phase(phase)): state = .processing(phase)
         case (.processing, let .completed(result)):

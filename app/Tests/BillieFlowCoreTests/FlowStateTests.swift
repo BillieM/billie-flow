@@ -28,6 +28,31 @@ struct FlowStateTests {
         #expect(machine.handle(.cancel) == .idle)
     }
 
+    @Test func warningAndFailurePersistButAllowRecovery() {
+        var warningMachine = FlowStateMachine(hasHotkey: true)
+        warningMachine.handle(.recordingStarted)
+        warningMachine.handle(.recordingStopped)
+        let warning = warningMachine.handle(.completed(Self.fallback))
+        #expect(warning.requiresExplicitDismissal)
+        #expect(warning.allowsRecordingStart)
+        #expect(warningMachine.handle(.recordingStarted) == .recording)
+
+        var failureMachine = FlowStateMachine(hasHotkey: true)
+        let failure = failureMachine.handle(.failed("Microphone denied."))
+        #expect(failure.requiresExplicitDismissal)
+        #expect(failure.allowsRecordingStart)
+        #expect(failureMachine.handle(.dismiss) == .idle)
+    }
+
+    @Test func ordinarySuccessDoesNotRequireExplicitDismissal() {
+        var machine = FlowStateMachine(hasHotkey: true)
+        machine.handle(.recordingStarted)
+        machine.handle(.recordingStopped)
+        let copied = machine.handle(.completed(Self.success))
+        #expect(!copied.requiresExplicitDismissal)
+        #expect(copied.allowsRecordingStart)
+    }
+
     @Test func temporaryAudioDeletesIdempotently() throws {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try Data("audio".utf8).write(to: url)
@@ -87,6 +112,18 @@ struct FlowStateTests {
         cleanupModel: WorkerProtocol.cleanupModel,
         style: .lightCleanup,
         warning: WorkerProtocol.cleanupFallbackWarning
+    )
+
+    private static let success = ProcessResult(
+        rawASR: "Speech.", rawCleanup: "Speech.", finalText: "Speech.", corrections: [],
+        timings: WorkerTimings(
+            loadingASRSeconds: 0, asrSeconds: 1, loadingCleanupSeconds: 0,
+            cleanupSeconds: 0.1, correctionSeconds: 0, totalSeconds: 1.1
+        ),
+        asrModel: WorkerProtocol.asrModel,
+        cleanupModel: WorkerProtocol.cleanupModel,
+        style: .lightCleanup,
+        warning: nil
     )
 }
 

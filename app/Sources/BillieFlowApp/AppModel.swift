@@ -64,7 +64,17 @@ final class AppModel: ObservableObject {
         }
         globalHotKey.onPressed = { [weak self] in self?.hotKeyPressed() }
         globalHotKey.onReleased = { [weak self] in self?.hotKeyReleased() }
-        if let hotKey { try? globalHotKey.register(hotKey) }
+        if let hotKey {
+            do {
+                try globalHotKey.register(hotKey)
+            } catch {
+                self.hotKey = nil
+                defaults.removeObject(forKey: Keys.hotKey)
+                machine = FlowStateMachine(hasHotkey: false)
+                state = machine.state
+                hotKeyError = "Your saved shortcut is no longer available. Choose another with Command or Control."
+            }
+        }
     }
 
     func configureHotKey(_ newValue: HotKey) {
@@ -98,6 +108,11 @@ final class AppModel: ObservableObject {
         Task { await worker.cancel() }
     }
 
+    func resetStatus() {
+        guard state.requiresExplicitDismissal else { return }
+        transition(.dismiss)
+    }
+
     func quit() {
         pressHeld = false
         recordingStartTask?.cancel()
@@ -115,7 +130,7 @@ final class AppModel: ObservableObject {
     }
 
     private func hotKeyPressed() {
-        guard !pressHeld, state == .idle else { return }
+        guard !pressHeld, state.allowsRecordingStart else { return }
         pressHeld = true
         hud.beginRecordingOnPointerScreen()
         startWarmupIfNeeded()
@@ -233,10 +248,8 @@ final class AppModel: ObservableObject {
         hud.update(state: state, style: style)
         dismissalTask?.cancel()
         switch state {
-        case .copied:
-            scheduleDismiss(after: .seconds(2))
-        case .failed:
-            scheduleDismiss(after: .seconds(4))
+        case .copied(warning: nil):
+            scheduleDismiss(after: .seconds(1.5))
         default: break
         }
     }

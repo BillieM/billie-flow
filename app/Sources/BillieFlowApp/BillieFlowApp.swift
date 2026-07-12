@@ -25,6 +25,10 @@ struct BillieFlowApp: App {
                 Button("Cancel", role: .destructive) { model.cancelCurrent() }
             }
 
+            if model.state.requiresExplicitDismissal {
+                Button("Dismiss Warning") { model.resetStatus() }
+            }
+
             Divider()
             SettingsLink { Text(model.hotKey == nil ? "Set Up…" : "Settings…") }
             Button("Quit Billie Flow") { model.quit() }

@@ -117,7 +117,7 @@ private struct HUDView: View {
         switch state {
         case .recording: "Recording"
         case let .processing(phase): phase.map(phaseTitle) ?? "Preparing"
-        case .copied(nil): "Copied"
+        case .copied(nil): "Copied · \(style.displayName)"
         case .copied: "Copied raw transcript"
         case .failed: "Couldn’t transcribe"
         default: "Billie Flow"
