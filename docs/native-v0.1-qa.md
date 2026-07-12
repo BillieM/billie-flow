@@ -18,7 +18,7 @@ content or audio paths into the QA record.
 
 ## Manual app acceptance
 
-- [ ] launch `dist/Billie Flow.app` outside Xcode
+- [x] launch `dist/Billie Flow.app` outside Xcode
 - [ ] app appears only in the menu bar (`LSUIElement`); no Dock icon
 - [ ] first run requires a custom hotkey with Command or Control
 - [ ] a modifier-free or Shift/Option-only hotkey is rejected
@@ -70,6 +70,8 @@ Automated and packaging gates:
 - [x] Xcode 26.6 Release app built as universal arm64/x86_64
 - [x] Release Info.plist lint, ad-hoc signing, and deep/strict verification passed
 - [x] Release metadata reports macOS 26.0 minimum and `LSUIElement=true`
+- [x] signed `dist/Billie Flow.app` launched outside Xcode, stayed running from
+      its bundle executable, terminated cleanly, and left no app process
 
 Production-model acceptance used the existing 35.3-second voice memo without
 printing its path or content. Fixed model IDs and all expected phases matched
