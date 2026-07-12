@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 import json
+import os
 import sys
+import time
 
 ASR = "mlx-community/whisper-large-v3-turbo"
 CLEANUP = "mlx-community/Qwen2.5-1.5B-Instruct-4bit"
+
+pid_file = os.environ.get("BILLIE_FLOW_FAKE_PID_FILE")
+if pid_file:
+    with open(pid_file, "a", encoding="utf-8") as handle:
+        handle.write(f"{os.getpid()}\n")
+        handle.flush()
 
 for line in sys.stdin:
     command = json.loads(line)
@@ -25,6 +33,11 @@ for line in sys.stdin:
     elif name == "process":
         for phase in ("transcribing", "cleaning", "correcting"):
             print(json.dumps({"protocol_version": 1, "request_id": request_id, "event": "phase", "payload": {"phase": phase}}), flush=True)
+        delay_marker = os.environ.get("BILLIE_FLOW_FAKE_DELAY_ONCE_FILE")
+        if delay_marker and not os.path.exists(delay_marker):
+            with open(delay_marker, "w", encoding="utf-8") as handle:
+                handle.write("delayed")
+            time.sleep(float(os.environ.get("BILLIE_FLOW_FAKE_PROCESS_DELAY", "30")))
         event = "result"
         payload = {
             "kind": "process",

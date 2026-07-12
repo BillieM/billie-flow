@@ -1,3 +1,5 @@
+@preconcurrency import AVFoundation
+import Carbon
 import Foundation
 import Testing
 @testable import BillieFlowCore
@@ -74,8 +76,10 @@ struct FlowStateTests {
     }
 
     @Test func recordingDurationPolicyUsesApprovedBounds() {
+        #expect(RecordingPolicy.disposition(for: 0) == .discardTooShort)
         #expect(RecordingPolicy.disposition(for: 0.499) == .discardTooShort)
         #expect(RecordingPolicy.disposition(for: 0.5) == .submit)
+        #expect(RecordingPolicy.disposition(for: RecordingPolicy.maximumDuration) == .submit)
         #expect(RecordingPolicy.maximumDuration == 300)
         #expect(RecordingPolicy.normalizedLevel(decibels: -60) == 0)
         #expect(RecordingPolicy.normalizedLevel(decibels: 0) == 1)
@@ -102,6 +106,124 @@ struct FlowStateTests {
         #expect(ScreenSelection.index(containing: CGPoint(x: 250, y: 50), frames: frames) == nil)
     }
 
+    @Test func productionConverterFinalizes16kMonoInt16WAV() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID()).wav")
+        defer { try? FileManager.default.removeItem(at: url) }
+        let inputFormat = try #require(AVAudioFormat(
+            commonFormat: .pcmFormatFloat32,
+            sampleRate: 48_000,
+            channels: 2,
+            interleaved: false
+        ))
+        let meters = MeterCollector()
+        let writer = try PCMRecordingWriter(outputURL: url, inputFormat: inputFormat) {
+            elapsed, level in meters.append(elapsed: elapsed, level: level)
+        }
+
+        let framesPerBuffer: AVAudioFrameCount = 4_800
+        for chunk in 0..<10 {
+            let buffer = try #require(AVAudioPCMBuffer(
+                pcmFormat: inputFormat,
+                frameCapacity: framesPerBuffer
+            ))
+            buffer.frameLength = framesPerBuffer
+            let channels = try #require(buffer.floatChannelData)
+            for frame in 0..<Int(framesPerBuffer) {
+                let sampleIndex = chunk * Int(framesPerBuffer) + frame
+                let sample = Float(sin(2 * Double.pi * 440 * Double(sampleIndex) / 48_000) * 0.25)
+                channels[0][frame] = sample
+                channels[1][frame] = sample * 0.5
+            }
+            writer.append(buffer)
+        }
+
+        let duration = try writer.finish()
+        #expect(abs(duration - 1) < 0.02)
+        let wav = try AVAudioFile(forReading: url)
+        #expect(wav.fileFormat.sampleRate == PCMRecordingWriter.sampleRate)
+        #expect(wav.fileFormat.channelCount == PCMRecordingWriter.channelCount)
+        #expect(wav.fileFormat.commonFormat == .pcmFormatInt16)
+        #expect(wav.fileFormat.isInterleaved)
+        #expect(abs(Double(wav.length) / wav.fileFormat.sampleRate - duration) < 0.001)
+        #expect(meters.values.count == 10)
+        #expect(meters.values.allSatisfy { $0.level > 0 && $0.level <= 1 })
+        #expect(meters.values.last?.elapsed == duration)
+    }
+
+    @Test func cancellationCannotBypassTemporaryAudioDeletion() async throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID()).wav")
+        try Data("audio".utf8).write(to: url)
+        let audio = TemporaryAudio(url: url)
+        let operation = Task {
+            try await audio.deletingAfter {
+                try await Task.sleep(for: .seconds(30))
+                return true
+            }
+        }
+        operation.cancel()
+        do {
+            _ = try await operation.value
+            Issue.record("Cancelled audio operation unexpectedly completed.")
+        } catch is CancellationError {
+            // Expected: deletion happens before cancellation is rethrown.
+        }
+        #expect(!FileManager.default.fileExists(atPath: url.path))
+    }
+
+    @Test func clipboardPreservesExistingContentOnEmptyOrFailureAndCopiesFallback() {
+        #expect(ClipboardPolicy.decision(for: .success(Self.success)) == .copy("Speech.", warning: nil))
+        #expect(
+            ClipboardPolicy.decision(for: .success(Self.fallback))
+                == .copy("Raw speech.", warning: WorkerProtocol.cleanupFallbackWarning)
+        )
+        let empty = ProcessResult(
+            rawASR: "", rawCleanup: nil, finalText: " \n ", corrections: [],
+            timings: Self.success.timings,
+            asrModel: WorkerProtocol.asrModel,
+            cleanupModel: WorkerProtocol.cleanupModel,
+            style: .lightCleanup,
+            warning: nil
+        )
+        #expect(ClipboardPolicy.decision(for: .success(empty)) == .preserve)
+        #expect(ClipboardPolicy.decision(for: .failure(TestFailure.expected)) == .preserve)
+    }
+
+    @Test func hotKeyValidationAndRebindingAreTransactional() throws {
+        let commandA = HotKey(keyCode: 0, modifiers: UInt32(cmdKey))
+        let controlSpace = HotKey(keyCode: 49, modifiers: UInt32(controlKey))
+        let optionOnly = HotKey(keyCode: 49, modifiers: UInt32(optionKey))
+        #expect(commandA.hasRequiredModifier)
+        #expect(controlSpace.hasRequiredModifier)
+        #expect(!optionOnly.hasRequiredModifier)
+        #expect(controlSpace.displayName == "⌃Space")
+        let encoded = try JSONEncoder().encode(controlSpace)
+        #expect(try JSONDecoder().decode(HotKey.self, from: encoded) == controlSpace)
+
+        var binding = HotKeyBinding(current: commandA)
+        #expect(throws: HotKeyBindingError.invalidModifiers) {
+            try binding.rebind(to: optionOnly) { _ in Issue.record("Invalid shortcut was registered.") }
+        }
+        #expect(binding.current == commandA)
+        #expect(throws: TestFailure.conflict) {
+            try binding.rebind(to: controlSpace) { _ in throw TestFailure.conflict }
+        }
+        #expect(binding.current == commandA)
+
+        var registrations = 0
+        #expect(try binding.rebind(to: controlSpace) { _ in registrations += 1 })
+        #expect(binding.current == controlSpace)
+        #expect(!(try binding.rebind(to: controlSpace) { _ in registrations += 1 }))
+        #expect(registrations == 1)
+    }
+
+    @Test func settingsDefaultsAndWorkerHealthAreStable() {
+        #expect(SettingsPolicy.style(storedValue: nil) == .lightCleanup)
+        #expect(SettingsPolicy.style(storedValue: "unknown") == .lightCleanup)
+        #expect(SettingsPolicy.style(storedValue: CleanupStyle.message.rawValue) == .message)
+        #expect(SettingsPolicy.workerHealth(executableExists: true) == .executablePresent)
+        #expect(SettingsPolicy.workerHealth(executableExists: false) == .executableMissing)
+    }
+
     private static let fallback = ProcessResult(
         rawASR: "Raw speech.", rawCleanup: nil, finalText: "Raw speech.", corrections: [],
         timings: WorkerTimings(
@@ -125,6 +247,21 @@ struct FlowStateTests {
         style: .lightCleanup,
         warning: nil
     )
+}
+
+private enum TestFailure: Error, Equatable {
+    case expected
+    case conflict
+}
+
+private final class MeterCollector: @unchecked Sendable {
+    struct Value { let elapsed: TimeInterval; let level: Double }
+    private let lock = NSLock()
+    private var storage: [Value] = []
+    var values: [Value] { lock.withLock { storage } }
+    func append(elapsed: TimeInterval, level: Double) {
+        lock.withLock { storage.append(Value(elapsed: elapsed, level: level)) }
+    }
 }
 
 private final class StaleFileSystem: StaleRecordingFileSystem, @unchecked Sendable {

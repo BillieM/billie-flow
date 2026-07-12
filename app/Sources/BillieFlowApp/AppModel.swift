@@ -42,7 +42,7 @@ final class AppModel: ObservableObject {
 
     init(defaults: UserDefaults = .standard, workerConfiguration: WorkerLaunchConfiguration? = nil) {
         self.defaults = defaults
-        let storedStyle = defaults.string(forKey: Keys.style).flatMap(CleanupStyle.init(rawValue:)) ?? .lightCleanup
+        let storedStyle = SettingsPolicy.style(storedValue: defaults.string(forKey: Keys.style))
         style = storedStyle
         let loadedHotKey = Self.loadHotKey(defaults: defaults)
         hotKey = loadedHotKey
@@ -52,8 +52,9 @@ final class AppModel: ObservableObject {
 
         let configuration = workerConfiguration ?? Self.defaultWorkerConfiguration()
         workerExecutableURL = configuration.executableURL
-        workerHealth = FileManager.default.isExecutableFile(atPath: configuration.executableURL.path)
-            ? .executablePresent : .executableMissing
+        workerHealth = SettingsPolicy.workerHealth(
+            executableExists: FileManager.default.isExecutableFile(atPath: configuration.executableURL.path)
+        )
         worker = WorkerProcess(configuration: configuration)
         let staleDirectory = RecordingStorage.directory()
         if FileManager.default.fileExists(atPath: staleDirectory.path) {
@@ -103,8 +104,9 @@ final class AppModel: ObservableObject {
         maximumDurationTask = nil
         recorder.cancel()
         transition(.cancel)
-        workerHealth = FileManager.default.isExecutableFile(atPath: workerExecutableURL.path)
-            ? .executablePresent : .executableMissing
+        workerHealth = SettingsPolicy.workerHealth(
+            executableExists: FileManager.default.isExecutableFile(atPath: workerExecutableURL.path)
+        )
         Task { await worker.cancel() }
     }
 
@@ -212,13 +214,15 @@ final class AppModel: ObservableObject {
         processingTask = Task { [weak self, worker] in
             guard let self else { return }
             do {
-                try await warmup?.value
-                let result = try await worker.process(
-                    audioURL: audio.url,
-                    style: style,
-                    debug: false
-                ) { [weak self] phase in
-                    Task { @MainActor in self?.transition(.phase(phase)) }
+                let result = try await audio.deletingAfter {
+                    try await warmup?.value
+                    return try await worker.process(
+                        audioURL: audio.url,
+                        style: style,
+                        debug: false
+                    ) { [weak self] phase in
+                        Task { @MainActor in self?.transition(.phase(phase)) }
+                    }
                 }
                 guard !Task.isCancelled else { return }
                 switch ClipboardPolicy.decision(for: .success(result)) {
@@ -236,9 +240,6 @@ final class AppModel: ObservableObject {
             } catch {
                 warmupTask = nil
                 transition(.failed(error.localizedDescription))
-            }
-            if !audio.deleteWithRetries() {
-                transition(.failed("The temporary recording could not be deleted. Quit Billie Flow and remove it before continuing."))
             }
         }
     }

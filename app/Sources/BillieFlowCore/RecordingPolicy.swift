@@ -28,6 +28,18 @@ public enum WorkerHealth: Equatable, Sendable {
     case failed(String)
 }
 
+public enum SettingsPolicy {
+    public static let defaultStyle = CleanupStyle.lightCleanup
+
+    public static func style(storedValue: String?) -> CleanupStyle {
+        storedValue.flatMap(CleanupStyle.init(rawValue:)) ?? defaultStyle
+    }
+
+    public static func workerHealth(executableExists: Bool) -> WorkerHealth {
+        executableExists ? .executablePresent : .executableMissing
+    }
+}
+
 public enum ScreenSelection {
     public static func index(containing point: CGPoint, frames: [CGRect]) -> Int? {
         frames.firstIndex(where: { $0.contains(point) })

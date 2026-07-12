@@ -90,8 +90,12 @@ public protocol AudioFileSystem: Sendable {
 
 extension FileManager: AudioFileSystem {}
 
-public enum TemporaryAudioError: Error, Equatable, Sendable {
+public enum TemporaryAudioError: LocalizedError, Equatable, Sendable {
     case deletionFailed
+
+    public var errorDescription: String? {
+        "The temporary recording could not be deleted. Quit Billie Flow and remove it before continuing."
+    }
 }
 
 public final class TemporaryAudio: @unchecked Sendable {
@@ -135,5 +139,21 @@ public final class TemporaryAudio: @unchecked Sendable {
             }
         }
         return false
+    }
+
+    /// Runs an operation while this file is owned by it, then deletes the file
+    /// before returning or rethrowing. In particular, task cancellation cannot
+    /// skip cleanup between a worker result and the caller's cancellation check.
+    public func deletingAfter<T: Sendable>(
+        _ operation: @escaping @Sendable () async throws -> T
+    ) async throws -> T {
+        let result: Result<T, any Error>
+        do {
+            result = .success(try await operation())
+        } catch {
+            result = .failure(error)
+        }
+        guard deleteWithRetries() else { throw TemporaryAudioError.deletionFailed }
+        return try result.get()
     }
 }
