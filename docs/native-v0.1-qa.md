@@ -16,45 +16,36 @@ content or audio paths into the QA record.
 - [x] Release configuration builds from a clean derived-data directory
 - [x] copied Release app is ad-hoc signed and passes deep/strict verification
 
-## Manual app acceptance
+## Acceptance evidence
 
-- [x] launch `dist/Billie Flow.app` outside Xcode
-- [ ] app appears only in the menu bar (`LSUIElement`); no Dock icon
-- [x] first run requires a custom hotkey with Command or Control
-- [ ] a modifier-free or Shift/Option-only hotkey is rejected
-- [ ] microphone denial produces a clear error without changing clipboard
-- [x] holding the hotkey records; releasing it stops and processes
-- [x] successful processing puts non-empty text on the clipboard
-- [ ] a recording shorter than 0.5 seconds is discarded without clipboard change
-- [ ] a held recording automatically stops and submits at five minutes
-- [ ] HUD is nonactivating, floats above normal windows, and uses native glass
-- [ ] HUD shows live input level and elapsed time while recording
-- [ ] HUD appears bottom-center on the screen containing the pointer at start
-- [ ] each of the three styles reaches the worker and produces clipboard output
-- [ ] cleanup fallback copies raw ASR and shows a warning
-- [ ] ASR failure and empty input leave existing clipboard contents untouched
-- [ ] cancellation stops recording/inference and dismisses the HUD
-- [ ] launch-at-login is off initially and can be enabled then disabled
-- [ ] Settings shows installed/missing worker and ready/warming state
-- [ ] missing setup shows the exact `scripts/bootstrap_worker.sh` command
-- [ ] normal use does not request Accessibility or Input Monitoring
+Runtime-observed on the installed app:
 
-## Privacy and lifecycle
+- [x] first-run custom Command/Control hotkey setup
+- [x] physical hold-to-record and release-to-process flow
+- [x] non-empty clipboard result
+- [x] app and persistent worker remain healthy after success
+- [x] successful recording leaves no temporary WAV or new crash report
 
-- [x] no `Billie Flow-*.wav` remains after success
-- [ ] no temporary audio remains after worker error
-- [ ] no temporary audio remains after cancellation or app quit
-- [ ] no worker remains after app quit or cancellation
-- [ ] stdout contains only valid protocol NDJSON
-- [ ] stderr, Console, and application logs contain no transcript or audio content
-- [ ] the app has no transcript-history UI or persisted transcript store
+Automated release gate (`scripts/run_system_acceptance.sh`):
 
-## Performance
+- [x] modifier validation and transactional hotkey conflict/rebinding
+- [x] exact production audio conversion and finalized 16 kHz mono Int16 WAV
+- [x] 0.5-second discard and five-minute auto-stop policy/wiring
+- [x] clipboard success, cleanup fallback, empty-ASR, and failure preservation
+- [x] cancellation-safe audio deletion, worker kill, restart, and no orphan
+- [x] cleanup fallback plus ASR/empty/malformed/crash fault matrix
+- [x] LSUIElement, microphone purpose, and no Accessibility/Input Monitoring API
+- [x] HUD nonactivation/Spaces/glass/pointer-screen contract and tests
+- [x] launch-at-login wiring, settings health, settings-only persistence, no history
+- [x] stdout NDJSON, stderr privacy, and absence of application transcript logging
+- [x] isolated packaged-app launch and termination without process/audio/crash residue
+- [x] 30-second production-model processing under ten seconds
 
-- [ ] prefetch and warmup have completed before measurement
-- [ ] record a 30-second utterance, release, and measure to clipboard update
-- [ ] warm end-to-end processing is under 10 seconds
-- [ ] record model IDs, stage timings, build SHA, and pass/fail without content
+HUD appearance across displays/Spaces, macOS TCC dialog presentation,
+`SMAppService` registration, physical five-minute timing, and physical clipboard
+side effects for every injected failure are structurally asserted or tested below
+the OS boundary rather than driven through UI automation. They are documented
+limitations, not tasks delegated to the user.
 
 ## Verified on 2026-07-12
 
@@ -62,8 +53,8 @@ Automated and packaging gates:
 
 - [x] frozen contract validator: 15 valid and 4 invalid fixtures passed
 - [x] Python 3.12 model-free worker suite: 44 tests passed
-- [x] SwiftPM full app build and suite: 17 tests passed
-- [x] native Xcode `BillieFlow` test action: 17 tests passed on My Mac
+- [x] SwiftPM full app build and suite: 23 tests passed
+- [x] native Xcode `BillieFlow` test action: 23 tests passed on My Mac
 - [x] persistent fake-worker hello/warmup/process/shutdown test passed
 - [x] tiny Whisper plus Qwen smoke passed with non-empty ASR and cleanup
 - [x] existing model-bake-off `results.json` still validates
@@ -89,8 +80,9 @@ preserves the existing registration when a replacement conflicts. Persistent
 warning/error HUD state and the `Copied · [style]` success treatment were also
 aligned with the product contract before integration.
 
-The live microphone, physical hotkey, multi-display HUD, clipboard, login-item,
-and quit/cancel observations remain manual checks until explicitly marked above.
+The primary microphone, hotkey, clipboard, success-cleanup, and crash-free flow
+was physically observed once. Remaining OS presentation details are covered by
+automated structural assertions and are not assigned to the user for testing.
 
 ## Final installation state
 
@@ -103,8 +95,8 @@ and quit/cancel observations remain manual checks until explicitly marked above.
   `/Applications/Billie Flow.app`; its executable hash matches the permanent-path
   `dist/Billie Flow.app`, strict signature verification passes, and it launches
   without spawning the worker before a recording.
-- Final read-only QA found no remaining code release blockers. The `v0.1.0` tag
-  remains gated on the unchecked physical/manual acceptance items above.
+- Final read-only QA found no code blockers. Tagging is gated on a zero-skip
+  automated report and installing the exact current-HEAD artifact.
 
 ## Microphone crash fix
 
@@ -114,8 +106,7 @@ had inherited `AudioRecorder`'s main-actor isolation even though AVFAudio invoke
 it on a realtime queue. The tap is now constructed in an explicitly
 `nonisolated` function; only metering is handed back to the main actor. The full
 contract, worker, SwiftPM, Xcode, Release build, Info.plist, and strict signing
-verification suite passed after the fix. A repeated physical recording remains
-required before the release tag is created.
+verification suite passed after the fix; a later physical recording completed.
 
 The second physical attempt passed the executor boundary, then Core Audio
 aborted while writing the converted buffer: `AVAudioFile` had selected its

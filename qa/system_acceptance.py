@@ -85,12 +85,21 @@ class Acceptance:
             )
         )
 
-    def skip(self, check_id: str, detail: str) -> None:
-        self.checks.append(Check(check_id, "skip", 0.0, detail, False))
+    def skip(
+        self,
+        check_id: str,
+        detail: str,
+        *,
+        release_blocker: bool = True,
+    ) -> None:
+        self.checks.append(Check(check_id, "skip", 0.0, detail, release_blocker))
 
     @property
     def blockers(self) -> list[Check]:
-        return [item for item in self.checks if item.status == "fail" and item.release_blocker]
+        return [
+            item for item in self.checks
+            if item.status in {"fail", "skip"} and item.release_blocker
+        ]
 
 
 def require(condition: bool, message: str) -> None:
@@ -594,9 +603,12 @@ def write_report(acceptance: Acceptance, output: Path) -> dict[str, Any]:
         status: sum(item.status == status for item in acceptance.checks)
         for status in ("pass", "fail", "skip")
     }
+    blocking_failures = [item for item in acceptance.blockers if item.status == "fail"]
+    blocking_skips = [item for item in acceptance.blockers if item.status == "skip"]
+    status = "failed" if blocking_failures else "incomplete" if blocking_skips else "passed"
     report = {
         "schema_version": "billie-flow.system-acceptance.v1",
-        "status": "failed" if acceptance.blockers else "passed",
+        "status": status,
         "counts": counts,
         "checks": [asdict(item) for item in acceptance.checks],
     }
@@ -614,11 +626,20 @@ def main() -> int:
     parser.add_argument("--launch-seconds", type=float, default=3.0)
     parser.add_argument("--skip-production", action="store_true")
     parser.add_argument("--skip-full-verifier", action="store_true")
+    parser.add_argument(
+        "--allow-skips",
+        action="store_true",
+        help="developer-only: do not treat explicitly skipped release checks as blockers",
+    )
     args = parser.parse_args()
 
     acceptance = Acceptance()
     if args.skip_full_verifier:
-        acceptance.skip("repository.full_verifier", "disabled by command line")
+        acceptance.skip(
+            "repository.full_verifier",
+            "disabled by command line",
+            release_blocker=not args.allow_skips,
+        )
     else:
         acceptance.run("repository.full_verifier", full_verifier)
 
@@ -631,7 +652,11 @@ def main() -> int:
     acceptance.run("privacy.clipboard_audio_logs", privacy_and_safety_contract)
 
     if args.skip_production:
-        acceptance.skip("worker.production_30_second", "disabled by command line")
+        acceptance.skip(
+            "worker.production_30_second",
+            "disabled by command line",
+            release_blocker=not args.allow_skips,
+        )
     else:
         audio = discover_production_audio(args.production_audio)
         if audio is None:
