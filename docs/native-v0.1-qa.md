@@ -90,3 +90,17 @@ aligned with the product contract before integration.
 
 The live microphone, physical hotkey, multi-display HUD, clipboard, login-item,
 and quit/cancel observations remain manual checks until explicitly marked above.
+
+## Final installation state
+
+- Repository moved with history and ignored lab assets to
+  `/Users/billie/Developer/billie-flow`.
+- Clean-cache `scripts/verify_native_v1.sh --full` passed at the permanent path.
+- The final production-model acceptance passed there in 2.059 seconds warm
+  processing, with all expected phases, no warning, and no private stderr content.
+- The ad-hoc-signed universal Release app is installed at
+  `/Applications/Billie Flow.app`; its executable hash matches the permanent-path
+  `dist/Billie Flow.app`, strict signature verification passes, and it launches
+  without spawning the worker before a recording.
+- Final read-only QA found no remaining code release blockers. The `v0.1.0` tag
+  remains gated on the unchecked physical/manual acceptance items above.
