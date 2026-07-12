@@ -5,16 +5,16 @@ content or audio paths into the QA record.
 
 ## Automated gates
 
-- [ ] frozen schema and valid/invalid NDJSON fixtures pass
-- [ ] worker protocol, correction, style, fallback, and error tests pass
-- [ ] Swift state, protocol, hotkey-validation, worker, and deletion tests pass
-- [ ] duration bounds, stale-WAV cleanup, worker health, and HUD metrics tests pass
-- [ ] fake worker end-to-end path passes
-- [ ] tiny-model smoke completes with no content logs
-- [ ] real large-v3-turbo plus Qwen request completes
-- [ ] existing model-bake-off result contract still validates
-- [ ] Release configuration builds from a clean derived-data directory
-- [ ] copied Release app is ad-hoc signed and passes deep/strict verification
+- [x] frozen schema and valid/invalid NDJSON fixtures pass
+- [x] worker protocol, correction, style, fallback, and error tests pass
+- [x] Swift state, protocol, hotkey-validation, worker, and deletion tests pass
+- [x] duration bounds, stale-WAV cleanup, worker health, and HUD metrics tests pass
+- [x] fake worker end-to-end path passes
+- [x] tiny-model smoke completes with no content logs
+- [x] real large-v3-turbo plus Qwen request completes
+- [x] existing model-bake-off result contract still validates
+- [x] Release configuration builds from a clean derived-data directory
+- [x] copied Release app is ad-hoc signed and passes deep/strict verification
 
 ## Manual app acceptance
 
@@ -60,9 +60,9 @@ content or audio paths into the QA record.
 Automated and packaging gates:
 
 - [x] frozen contract validator: 15 valid and 4 invalid fixtures passed
-- [x] Python 3.12 model-free worker suite: 40 tests passed
-- [x] SwiftPM full app build and suite: 15 tests passed
-- [x] native Xcode `BillieFlow` test action: 15 tests passed on My Mac
+- [x] Python 3.12 model-free worker suite: 44 tests passed
+- [x] SwiftPM full app build and suite: 17 tests passed
+- [x] native Xcode `BillieFlow` test action: 17 tests passed on My Mac
 - [x] persistent fake-worker hello/warmup/process/shutdown test passed
 - [x] tiny Whisper plus Qwen smoke passed with non-empty ASR and cleanup
 - [x] existing model-bake-off `results.json` still validates
@@ -80,6 +80,13 @@ ASR 1.239 seconds and cleanup 0.683 seconds. The result had no warning, applied
 three deterministic corrections, disclosed no private audio/transcript content
 on stderr, and the worker exited cleanly with status 0. This passes the warm
 30-second-under-10-seconds requirement.
+
+The final read-only release audit found and then verified fixes for two blockers:
+cleanup generation now detects token-limit termination and falls back to the
+complete raw ASR instead of copying truncated text, and hotkey rebinding now
+preserves the existing registration when a replacement conflicts. Persistent
+warning/error HUD state and the `Copied · [style]` success treatment were also
+aligned with the product contract before integration.
 
 The live microphone, physical hotkey, multi-display HUD, clipboard, login-item,
 and quit/cancel observations remain manual checks until explicitly marked above.
