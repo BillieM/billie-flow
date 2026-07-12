@@ -128,7 +128,12 @@ final class AudioRecorder {
         else { throw RecorderError.formatUnavailable }
 
         do {
-            let file = try AVAudioFile(forWriting: audio.url, settings: outputFormat.settings)
+            let file = try AVAudioFile(
+                forWriting: audio.url,
+                settings: outputFormat.settings,
+                commonFormat: outputFormat.commonFormat,
+                interleaved: outputFormat.isInterleaved
+            )
             let capture = Capture(file: file, converter: converter) { [weak self] elapsed, level in
                 Task { @MainActor in self?.onMeter?(elapsed, level) }
             }

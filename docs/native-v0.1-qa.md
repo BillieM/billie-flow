@@ -115,3 +115,11 @@ it on a realtime queue. The tap is now constructed in an explicitly
 contract, worker, SwiftPM, Xcode, Release build, Info.plist, and strict signing
 verification suite passed after the fix. A repeated physical recording remains
 required before the release tag is created.
+
+The second physical attempt passed the executor boundary, then Core Audio
+aborted while writing the converted buffer: `AVAudioFile` had selected its
+default processing format rather than the recorder's Int16 interleaved format.
+The file is now opened with an explicit processing format matching the
+converter output. A direct integration smoke converted 48 kHz stereo float
+buffers through the recorder path, finalized the output, and read it back as a
+valid 16 kHz mono Int16 WAV before the full release suite passed again.
