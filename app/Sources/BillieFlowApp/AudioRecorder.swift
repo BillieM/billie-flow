@@ -132,9 +132,12 @@ final class AudioRecorder {
             let capture = Capture(file: file, converter: converter) { [weak self] elapsed, level in
                 Task { @MainActor in self?.onMeter?(elapsed, level) }
             }
-            input.installTap(onBus: 0, bufferSize: 2_048, format: inputFormat) { buffer, _ in
-                capture.consume(buffer, outputFormat: outputFormat)
-            }
+            Self.installRealtimeTap(
+                on: input,
+                inputFormat: inputFormat,
+                outputFormat: outputFormat,
+                capture: capture
+            )
             engine.prepare()
             try engine.start()
             self.capture = capture
@@ -169,6 +172,20 @@ final class AudioRecorder {
         capture = nil
         _ = audio?.deleteWithRetries()
         audio = nil
+    }
+
+    /// AVAudioEngine invokes tap blocks on a realtime audio queue. Build the
+    /// callback outside the recorder's MainActor isolation so Swift 6 does not
+    /// install a main-executor precondition on every incoming audio buffer.
+    nonisolated private static func installRealtimeTap(
+        on input: AVAudioInputNode,
+        inputFormat: AVAudioFormat,
+        outputFormat: AVAudioFormat,
+        capture: Capture
+    ) {
+        input.installTap(onBus: 0, bufferSize: 2_048, format: inputFormat) { buffer, _ in
+            capture.consume(buffer, outputFormat: outputFormat)
+        }
     }
 
     private func requestMicrophoneAccess() async -> Bool {

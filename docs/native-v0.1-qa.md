@@ -104,3 +104,14 @@ and quit/cancel observations remain manual checks until explicitly marked above.
   without spawning the worker before a recording.
 - Final read-only QA found no remaining code release blockers. The `v0.1.0` tag
   remains gated on the unchecked physical/manual acceptance items above.
+
+## Microphone crash fix
+
+The first physical recording attempt produced a Swift executor precondition
+crash when Core Audio delivered its first buffer. The `AVAudioEngine` tap block
+had inherited `AudioRecorder`'s main-actor isolation even though AVFAudio invokes
+it on a realtime queue. The tap is now constructed in an explicitly
+`nonisolated` function; only metering is handed back to the main actor. The full
+contract, worker, SwiftPM, Xcode, Release build, Info.plist, and strict signing
+verification suite passed after the fix. A repeated physical recording remains
+required before the release tag is created.
