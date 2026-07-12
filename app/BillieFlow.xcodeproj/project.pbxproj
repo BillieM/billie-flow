@@ -1,0 +1,355 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		010000000000000000000001 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000001 /* AppModel.swift */; };
+		010000000000000000000002 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000002 /* AudioRecorder.swift */; };
+		010000000000000000000003 /* BillieFlowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000003 /* BillieFlowApp.swift */; };
+		010000000000000000000004 /* HotKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000004 /* HotKey.swift */; };
+		010000000000000000000005 /* HUDPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000005 /* HUDPanel.swift */; };
+		010000000000000000000006 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000006 /* SettingsView.swift */; };
+		010000000000000000000007 /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000007 /* README.txt */; };
+		010000000000000000000008 /* BillieFlowCore in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0000000000000000000001 /* BillieFlowCore */; };
+		010000000000000000000009 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020000000000000000000020 /* AppKit.framework */; };
+		01000000000000000000000A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020000000000000000000021 /* AVFoundation.framework */; };
+		01000000000000000000000B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020000000000000000000022 /* Carbon.framework */; };
+		01000000000000000000000C /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020000000000000000000023 /* ServiceManagement.framework */; };
+		010000000000000000000010 /* FlowStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000040 /* FlowStateTests.swift */; };
+		010000000000000000000011 /* WorkerProcessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000041 /* WorkerProcessTests.swift */; };
+		010000000000000000000012 /* WorkerProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000042 /* WorkerProtocolTests.swift */; };
+		010000000000000000000013 /* fake_worker.py in Resources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000043 /* fake_worker.py */; };
+		010000000000000000000014 /* BillieFlowCore in Frameworks */ = {isa = PBXBuildFile; productRef = 0D0000000000000000000002 /* BillieFlowCore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		020000000000000000000001 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		020000000000000000000002 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
+		020000000000000000000003 /* BillieFlowApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillieFlowApp.swift; sourceTree = "<group>"; };
+		020000000000000000000004 /* HotKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKey.swift; sourceTree = "<group>"; };
+		020000000000000000000005 /* HUDPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDPanel.swift; sourceTree = "<group>"; };
+		020000000000000000000006 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		020000000000000000000007 /* README.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
+		020000000000000000000010 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		020000000000000000000011 /* BillieFlow.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BillieFlow.entitlements; sourceTree = "<group>"; };
+		020000000000000000000012 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+		020000000000000000000020 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		020000000000000000000021 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		020000000000000000000022 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		020000000000000000000023 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		020000000000000000000030 /* Billie Flow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Billie Flow.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		020000000000000000000040 /* FlowStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowStateTests.swift; sourceTree = "<group>"; };
+		020000000000000000000041 /* WorkerProcessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkerProcessTests.swift; sourceTree = "<group>"; };
+		020000000000000000000042 /* WorkerProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkerProtocolTests.swift; sourceTree = "<group>"; };
+		020000000000000000000043 /* fake_worker.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = fake_worker.py; sourceTree = "<group>"; };
+		020000000000000000000044 /* BillieFlowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BillieFlowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		030000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				010000000000000000000008 /* BillieFlowCore in Frameworks */,
+				010000000000000000000009 /* AppKit.framework in Frameworks */,
+				01000000000000000000000A /* AVFoundation.framework in Frameworks */,
+				01000000000000000000000B /* Carbon.framework in Frameworks */,
+				01000000000000000000000C /* ServiceManagement.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		030000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (010000000000000000000014 /* BillieFlowCore in Frameworks */);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		040000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				040000000000000000000002 /* Sources */,
+				040000000000000000000007 /* Tests */,
+				040000000000000000000003 /* Config */,
+				040000000000000000000004 /* Frameworks */,
+				040000000000000000000005 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		040000000000000000000002 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				020000000000000000000001 /* AppModel.swift */,
+				020000000000000000000002 /* AudioRecorder.swift */,
+				020000000000000000000003 /* BillieFlowApp.swift */,
+				020000000000000000000004 /* HotKey.swift */,
+				020000000000000000000005 /* HUDPanel.swift */,
+				020000000000000000000006 /* SettingsView.swift */,
+				040000000000000000000006 /* Resources */,
+			);
+			name = Sources;
+			path = Sources/BillieFlowApp;
+			sourceTree = SOURCE_ROOT;
+		};
+		040000000000000000000003 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				020000000000000000000010 /* Info.plist */,
+				020000000000000000000011 /* BillieFlow.entitlements */,
+				020000000000000000000012 /* Shared.xcconfig */,
+			);
+			path = Config;
+			sourceTree = SOURCE_ROOT;
+		};
+		040000000000000000000004 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				020000000000000000000020 /* AppKit.framework */,
+				020000000000000000000021 /* AVFoundation.framework */,
+				020000000000000000000022 /* Carbon.framework */,
+				020000000000000000000023 /* ServiceManagement.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		040000000000000000000005 /* Products */ = {
+			isa = PBXGroup;
+			children = (020000000000000000000030 /* Billie Flow.app */, 020000000000000000000044 /* BillieFlowTests.xctest */);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		040000000000000000000006 /* Resources */ = {
+			isa = PBXGroup;
+			children = (020000000000000000000007 /* README.txt */);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		040000000000000000000007 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				020000000000000000000040 /* FlowStateTests.swift */,
+				020000000000000000000041 /* WorkerProcessTests.swift */,
+				020000000000000000000042 /* WorkerProtocolTests.swift */,
+				040000000000000000000008 /* Fixtures */,
+			);
+			path = Tests/BillieFlowCoreTests;
+			sourceTree = SOURCE_ROOT;
+		};
+		040000000000000000000008 /* Fixtures */ = {
+			isa = PBXGroup;
+			children = (020000000000000000000043 /* fake_worker.py */);
+			path = Fixtures;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		050000000000000000000001 /* Billie Flow */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A0000000000000000000002 /* Build configuration list for PBXNativeTarget "Billie Flow" */;
+			buildPhases = (
+				060000000000000000000001 /* Sources */,
+				030000000000000000000001 /* Frameworks */,
+				070000000000000000000001 /* Resources */,
+			);
+			buildRules = ();
+			dependencies = ();
+			name = "Billie Flow";
+			packageProductDependencies = (0D0000000000000000000001 /* BillieFlowCore */);
+			productName = BillieFlow;
+			productReference = 020000000000000000000030 /* Billie Flow.app */;
+			productType = "com.apple.product-type.application";
+		};
+		050000000000000000000002 /* BillieFlowTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A0000000000000000000003 /* Build configuration list for PBXNativeTarget "BillieFlowTests" */;
+			buildPhases = (
+				060000000000000000000002 /* Sources */,
+				030000000000000000000002 /* Frameworks */,
+				070000000000000000000002 /* Resources */,
+			);
+			buildRules = ();
+			dependencies = ();
+			name = BillieFlowTests;
+			packageProductDependencies = (0D0000000000000000000002 /* BillieFlowCore */);
+			productName = BillieFlowTests;
+			productReference = 020000000000000000000044 /* BillieFlowTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		080000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {050000000000000000000001 = {CreatedOnToolsVersion = 26.6;}; 050000000000000000000002 = {CreatedOnToolsVersion = 26.6;};};
+			};
+			buildConfigurationList = 0A0000000000000000000001 /* Build configuration list for PBXProject "BillieFlow" */;
+			compatibilityVersion = "Xcode 16.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base);
+			mainGroup = 040000000000000000000001;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (0C0000000000000000000001 /* XCLocalSwiftPackageReference "." */);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 040000000000000000000005 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (050000000000000000000001 /* Billie Flow */, 050000000000000000000002 /* BillieFlowTests */);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		070000000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (010000000000000000000007 /* README.txt in Resources */);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		070000000000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (010000000000000000000013 /* fake_worker.py in Resources */);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		060000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				010000000000000000000001 /* AppModel.swift in Sources */,
+				010000000000000000000002 /* AudioRecorder.swift in Sources */,
+				010000000000000000000003 /* BillieFlowApp.swift in Sources */,
+				010000000000000000000004 /* HotKey.swift in Sources */,
+				010000000000000000000005 /* HUDPanel.swift in Sources */,
+				010000000000000000000006 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		060000000000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				010000000000000000000010 /* FlowStateTests.swift in Sources */,
+				010000000000000000000011 /* WorkerProcessTests.swift in Sources */,
+				010000000000000000000012 /* WorkerProtocolTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		090000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 020000000000000000000012 /* Shared.xcconfig */;
+			buildSettings = {DEBUG_INFORMATION_FORMAT = dwarf; ENABLE_TESTABILITY = YES; ONLY_ACTIVE_ARCH = YES; SDKROOT = macosx;};
+			name = Debug;
+		};
+		090000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 020000000000000000000012 /* Shared.xcconfig */;
+			buildSettings = {DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; SDKROOT = macosx; SWIFT_COMPILATION_MODE = wholemodule; SWIFT_OPTIMIZATION_LEVEL = "-O";};
+			name = Release;
+		};
+		090000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 020000000000000000000012 /* Shared.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Config/BillieFlow.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Config/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.billiem.BillieFlow;
+				PRODUCT_NAME = "Billie Flow";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		090000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 020000000000000000000012 /* Shared.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Config/BillieFlow.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Config/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.billiem.BillieFlow;
+				PRODUCT_NAME = "Billie Flow";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+		090000000000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 020000000000000000000012 /* Shared.xcconfig */;
+			buildSettings = {GENERATE_INFOPLIST_FILE = YES; PRODUCT_BUNDLE_IDENTIFIER = uk.billiem.BillieFlowTests; PRODUCT_NAME = "$(TARGET_NAME)";};
+			name = Debug;
+		};
+		090000000000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 020000000000000000000012 /* Shared.xcconfig */;
+			buildSettings = {GENERATE_INFOPLIST_FILE = YES; PRODUCT_BUNDLE_IDENTIFIER = uk.billiem.BillieFlowTests; PRODUCT_NAME = "$(TARGET_NAME)";};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0A0000000000000000000001 /* Build configuration list for PBXProject "BillieFlow" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (090000000000000000000001 /* Debug */, 090000000000000000000002 /* Release */);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A0000000000000000000002 /* Build configuration list for PBXNativeTarget "Billie Flow" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (090000000000000000000003 /* Debug */, 090000000000000000000004 /* Release */);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A0000000000000000000003 /* Build configuration list for PBXNativeTarget "BillieFlowTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (090000000000000000000005 /* Debug */, 090000000000000000000006 /* Release */);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		0C0000000000000000000001 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0D0000000000000000000001 /* BillieFlowCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C0000000000000000000001 /* XCLocalSwiftPackageReference "." */;
+			productName = BillieFlowCore;
+		};
+		0D0000000000000000000002 /* BillieFlowCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C0000000000000000000001 /* XCLocalSwiftPackageReference "." */;
+			productName = BillieFlowCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 080000000000000000000001 /* Project object */;
+}
