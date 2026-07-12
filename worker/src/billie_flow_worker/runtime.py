@@ -10,6 +10,14 @@ from . import ASR_MODEL, CLEANUP_MODEL
 from .audio import read_pcm_wav
 from .prompts import ASR_INITIAL_PROMPT, cleanup_messages
 
+_MIN_CLEANUP_TOKENS = 256
+_MAX_CLEANUP_TOKENS = 4096
+_CLEANUP_TOKEN_HEADROOM = 128
+
+
+class CleanupOutputTruncated(RuntimeError):
+    """Raised when cleanup reaches its token budget without an end marker."""
+
 
 class ModelRuntime(Protocol):
     asr_loaded: bool
@@ -90,21 +98,46 @@ class MLXRuntime:
 
         messages = cleanup_messages(text, style)
         with contextlib.redirect_stdout(self._discard):
-            from mlx_lm import generate
+            from mlx_lm import stream_generate
 
             prompt = self._cleanup_tokenizer.apply_chat_template(
                 messages,
                 tokenize=False,
                 add_generation_prompt=True,
             )
-            output = generate(
+            max_tokens = _cleanup_token_budget(self._cleanup_tokenizer, text)
+            responses = stream_generate(
                 self._cleanup_model_object,
                 self._cleanup_tokenizer,
                 prompt,
                 verbose=False,
-                max_tokens=max(64, min(1024, len(text) // 2 + 64)),
+                max_tokens=max_tokens,
+            )
+            output_parts: list[str] = []
+            finish_reason = None
+            for response in responses:
+                output_parts.append(response.text)
+                if response.finish_reason is not None:
+                    finish_reason = response.finish_reason
+            output = "".join(output_parts)
+
+        if finish_reason != "stop":
+            raise CleanupOutputTruncated(
+                "cleanup generation ended before an end marker"
             )
         return _normalise_model_output(output)
+
+
+def _cleanup_token_budget(tokenizer: object, text: str) -> int:
+    """Allow a full rewrite while keeping worst-case generation bounded."""
+
+    encode = getattr(tokenizer, "encode")
+    input_tokens = len(encode(text, add_special_tokens=False))
+    estimated_output = input_tokens * 3 // 2 + _CLEANUP_TOKEN_HEADROOM
+    return max(
+        _MIN_CLEANUP_TOKENS,
+        min(_MAX_CLEANUP_TOKENS, estimated_output),
+    )
 
 
 def _normalise_model_output(value: str) -> str:

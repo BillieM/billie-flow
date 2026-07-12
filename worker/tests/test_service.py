@@ -159,6 +159,31 @@ def test_cleanup_failure_is_only_successful_fallback_and_skips_corrections(tmp_p
     assert "correcting" not in [item["payload"].get("phase") for item in events]
 
 
+def test_truncated_cleanup_returns_complete_raw_asr_with_warning(tmp_path: Path):
+    class TruncatingRuntime(StubRuntime):
+        def cleanup(self, text: str, style: str) -> str:
+            raise RuntimeError("cleanup generation reached its token budget")
+
+    audio = write_wav(tmp_path / "recording.wav")
+    runtime = TruncatingRuntime(transcript="The complete raw transcription.")
+    service = WorkerService(runtime)
+    greet(service)
+
+    result = list(
+        service.handle_line(
+            command(
+                "p",
+                "process",
+                {"audio_path": str(audio), "style": "message", "debug": False},
+            )
+        )
+    )[-1]
+
+    assert result["payload"]["raw_cleanup"] is None
+    assert result["payload"]["final_text"] == "The complete raw transcription."
+    assert result["payload"]["warning"] == "cleanup_failed_raw_asr"
+
+
 @pytest.mark.parametrize(
     ("runtime", "code"),
     [
