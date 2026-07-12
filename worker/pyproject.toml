@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools==83.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "billie-flow-worker"
+version = "0.1.0"
+description = "Private offline speech worker for Billie Flow"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "mlx-whisper==0.4.3",
+  "mlx-lm==0.31.3",
+]
+
+[project.scripts]
+billie-flow-worker = "billie_flow_worker.__main__:main"
+billie-flow-worker-prefetch = "billie_flow_worker.prefetch:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+billie_flow_worker = ["smoke_models.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
