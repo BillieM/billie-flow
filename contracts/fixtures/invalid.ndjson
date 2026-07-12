@@ -1,0 +1,4 @@
+{"protocol_version":2,"id":"hello-1","command":"hello","payload":{"client_name":"Billie Flow","client_version":"0.1.0"}}
+{"protocol_version":1,"id":"process-1","command":"process","payload":{"audio_path":"/tmp/a.wav","style":"email","debug":false}}
+{"protocol_version":1,"request_id":"process-1","event":"phase","payload":{"phase":"thinking"}}
+{"protocol_version":1,"request_id":"process-1","event":"result","payload":{"kind":"process","raw_asr":"","raw_cleanup":null,"final_text":"","corrections":[],"timings":{},"asr_model":"wrong","cleanup_model":"wrong","style":"message","warning":null}}

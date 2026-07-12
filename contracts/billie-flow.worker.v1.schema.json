@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://billiem.uk/contracts/billie-flow.worker.v1.schema.json",
+  "title": "Billie Flow Worker Protocol v1",
+  "oneOf": [
+    { "$ref": "#/$defs/helloCommand" },
+    { "$ref": "#/$defs/warmupCommand" },
+    { "$ref": "#/$defs/processCommand" },
+    { "$ref": "#/$defs/shutdownCommand" },
+    { "$ref": "#/$defs/readyEvent" },
+    { "$ref": "#/$defs/phaseEvent" },
+    { "$ref": "#/$defs/processResult" },
+    { "$ref": "#/$defs/warmupResult" },
+    { "$ref": "#/$defs/shutdownResult" },
+    { "$ref": "#/$defs/errorEvent" }
+  ],
+  "$defs": {
+    "version": { "const": 1 },
+    "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "style": {
+      "enum": ["verbatim-context-corrected", "light-cleanup", "message"]
+    },
+    "commandBase": {
+      "type": "object",
+      "required": ["protocol_version", "id", "command", "payload"],
+      "properties": {
+        "protocol_version": { "$ref": "#/$defs/version" },
+        "id": { "$ref": "#/$defs/id" },
+        "command": { "type": "string" },
+        "payload": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "eventBase": {
+      "type": "object",
+      "required": ["protocol_version", "request_id", "event", "payload"],
+      "properties": {
+        "protocol_version": { "$ref": "#/$defs/version" },
+        "request_id": { "$ref": "#/$defs/id" },
+        "event": { "type": "string" },
+        "payload": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "helloCommand": {
+      "allOf": [
+        { "$ref": "#/$defs/commandBase" },
+        {
+          "properties": {
+            "command": { "const": "hello" },
+            "payload": {
+              "type": "object",
+              "required": ["client_name", "client_version"],
+              "properties": {
+                "client_name": { "type": "string", "minLength": 1 },
+                "client_version": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      ]
+    },
+    "warmupCommand": {
+      "allOf": [
+        { "$ref": "#/$defs/commandBase" },
+        { "properties": { "command": { "const": "warmup" }, "payload": { "$ref": "#/$defs/emptyPayload" } } }
+      ]
+    },
+    "processCommand": {
+      "allOf": [
+        { "$ref": "#/$defs/commandBase" },
+        {
+          "properties": {
+            "command": { "const": "process" },
+            "payload": {
+              "type": "object",
+              "required": ["audio_path", "style", "debug"],
+              "properties": {
+                "audio_path": { "type": "string", "minLength": 1 },
+                "style": { "$ref": "#/$defs/style" },
+                "debug": { "type": "boolean" }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      ]
+    },
+    "shutdownCommand": {
+      "allOf": [
+        { "$ref": "#/$defs/commandBase" },
+        { "properties": { "command": { "const": "shutdown" }, "payload": { "$ref": "#/$defs/emptyPayload" } } }
+      ]
+    },
+    "emptyPayload": { "type": "object", "maxProperties": 0 },
+    "readyEvent": {
+      "allOf": [
+        { "$ref": "#/$defs/eventBase" },
+        {
+          "properties": {
+            "event": { "const": "ready" },
+            "payload": {
+              "type": "object",
+              "required": ["worker_version", "asr_model", "cleanup_model", "language", "corrections_version"],
+              "properties": {
+                "worker_version": { "type": "string", "minLength": 1 },
+                "asr_model": { "const": "mlx-community/whisper-large-v3-turbo" },
+                "cleanup_model": { "const": "mlx-community/Qwen2.5-1.5B-Instruct-4bit" },
+                "language": { "const": "en" },
+                "corrections_version": { "const": "1" }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      ]
+    },
+    "phaseEvent": {
+      "allOf": [
+        { "$ref": "#/$defs/eventBase" },
+        {
+          "properties": {
+            "event": { "const": "phase" },
+            "payload": {
+              "type": "object",
+              "required": ["phase"],
+              "properties": { "phase": { "enum": ["loading_asr", "transcribing", "loading_cleanup", "cleaning", "correcting"] } },
+              "additionalProperties": false
+            }
+          }
+        }
+      ]
+    },
+    "processResult": {
+      "allOf": [
+        { "$ref": "#/$defs/eventBase" },
+        {
+          "properties": {
+            "event": { "const": "result" },
+            "payload": {
+              "type": "object",
+              "required": ["kind", "raw_asr", "raw_cleanup", "final_text", "corrections", "timings", "asr_model", "cleanup_model", "style", "warning"],
+              "properties": {
+                "kind": { "const": "process" },
+                "raw_asr": { "type": "string", "minLength": 1 },
+                "raw_cleanup": { "type": ["string", "null"] },
+                "final_text": { "type": "string", "minLength": 1 },
+                "corrections": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["from", "to", "count"],
+                    "properties": {
+                      "from": { "type": "string", "minLength": 1 },
+                      "to": { "type": "string", "minLength": 1 },
+                      "count": { "type": "integer", "minimum": 1 }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "timings": {
+                  "type": "object",
+                  "required": ["loading_asr_seconds", "asr_seconds", "loading_cleanup_seconds", "cleanup_seconds", "correction_seconds", "total_seconds"],
+                  "properties": {
+                    "loading_asr_seconds": { "type": "number", "minimum": 0 },
+                    "asr_seconds": { "type": "number", "minimum": 0 },
+                    "loading_cleanup_seconds": { "type": "number", "minimum": 0 },
+                    "cleanup_seconds": { "type": "number", "minimum": 0 },
+                    "correction_seconds": { "type": "number", "minimum": 0 },
+                    "total_seconds": { "type": "number", "minimum": 0 }
+                  },
+                  "additionalProperties": false
+                },
+                "asr_model": { "const": "mlx-community/whisper-large-v3-turbo" },
+                "cleanup_model": { "const": "mlx-community/Qwen2.5-1.5B-Instruct-4bit" },
+                "style": { "$ref": "#/$defs/style" },
+                "warning": { "type": ["null", "string"], "enum": [null, "cleanup_failed_raw_asr"] }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      ]
+    },
+    "warmupResult": {
+      "allOf": [
+        { "$ref": "#/$defs/eventBase" },
+        { "properties": { "event": { "const": "result" }, "payload": { "type": "object", "required": ["kind", "warmed"], "properties": { "kind": { "const": "warmup" }, "warmed": { "const": true } }, "additionalProperties": false } } }
+      ]
+    },
+    "shutdownResult": {
+      "allOf": [
+        { "$ref": "#/$defs/eventBase" },
+        { "properties": { "event": { "const": "result" }, "payload": { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "shutdown" } }, "additionalProperties": false } } }
+      ]
+    },
+    "errorEvent": {
+      "allOf": [
+        { "$ref": "#/$defs/eventBase" },
+        {
+          "properties": {
+            "event": { "const": "error" },
+            "payload": {
+              "type": "object",
+              "required": ["code", "message", "recoverable"],
+              "properties": {
+                "code": { "enum": ["invalid_request", "protocol_mismatch", "not_ready", "audio_invalid", "asr_failed", "empty_transcript", "internal_error"] },
+                "message": { "type": "string", "minLength": 1 },
+                "recoverable": { "type": "boolean" }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      ]
+    }
+  }
+}

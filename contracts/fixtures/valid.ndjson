@@ -1,0 +1,15 @@
+{"protocol_version":1,"id":"hello-1","command":"hello","payload":{"client_name":"Billie Flow","client_version":"0.1.0"}}
+{"protocol_version":1,"request_id":"hello-1","event":"ready","payload":{"worker_version":"0.1.0","asr_model":"mlx-community/whisper-large-v3-turbo","cleanup_model":"mlx-community/Qwen2.5-1.5B-Instruct-4bit","language":"en","corrections_version":"1"}}
+{"protocol_version":1,"id":"warmup-1","command":"warmup","payload":{}}
+{"protocol_version":1,"request_id":"warmup-1","event":"phase","payload":{"phase":"loading_asr"}}
+{"protocol_version":1,"request_id":"warmup-1","event":"phase","payload":{"phase":"loading_cleanup"}}
+{"protocol_version":1,"request_id":"warmup-1","event":"result","payload":{"kind":"warmup","warmed":true}}
+{"protocol_version":1,"id":"process-1","command":"process","payload":{"audio_path":"/tmp/recording.wav","style":"light-cleanup","debug":false}}
+{"protocol_version":1,"request_id":"process-1","event":"phase","payload":{"phase":"transcribing"}}
+{"protocol_version":1,"request_id":"process-1","event":"phase","payload":{"phase":"cleaning"}}
+{"protocol_version":1,"request_id":"process-1","event":"phase","payload":{"phase":"correcting"}}
+{"protocol_version":1,"request_id":"process-1","event":"result","payload":{"kind":"process","raw_asr":"Billy Flow is ready.","raw_cleanup":"Billy Flow is ready.","final_text":"Billie Flow is ready.","corrections":[{"from":"Billy Flow","to":"Billie Flow","count":1}],"timings":{"loading_asr_seconds":0.0,"asr_seconds":1.2,"loading_cleanup_seconds":0.0,"cleanup_seconds":0.8,"correction_seconds":0.001,"total_seconds":2.001},"asr_model":"mlx-community/whisper-large-v3-turbo","cleanup_model":"mlx-community/Qwen2.5-1.5B-Instruct-4bit","style":"light-cleanup","warning":null}}
+{"protocol_version":1,"request_id":"process-2","event":"result","payload":{"kind":"process","raw_asr":"Raw speech.","raw_cleanup":null,"final_text":"Raw speech.","corrections":[],"timings":{"loading_asr_seconds":0.0,"asr_seconds":1.0,"loading_cleanup_seconds":0.0,"cleanup_seconds":0.1,"correction_seconds":0.0,"total_seconds":1.1},"asr_model":"mlx-community/whisper-large-v3-turbo","cleanup_model":"mlx-community/Qwen2.5-1.5B-Instruct-4bit","style":"message","warning":"cleanup_failed_raw_asr"}}
+{"protocol_version":1,"request_id":"process-3","event":"error","payload":{"code":"empty_transcript","message":"No speech was detected.","recoverable":true}}
+{"protocol_version":1,"id":"shutdown-1","command":"shutdown","payload":{}}
+{"protocol_version":1,"request_id":"shutdown-1","event":"result","payload":{"kind":"shutdown"}}
