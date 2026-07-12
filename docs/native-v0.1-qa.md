@@ -20,10 +20,11 @@ content or audio paths into the QA record.
 
 - [x] launch `dist/Billie Flow.app` outside Xcode
 - [ ] app appears only in the menu bar (`LSUIElement`); no Dock icon
-- [ ] first run requires a custom hotkey with Command or Control
+- [x] first run requires a custom hotkey with Command or Control
 - [ ] a modifier-free or Shift/Option-only hotkey is rejected
 - [ ] microphone denial produces a clear error without changing clipboard
-- [ ] holding the hotkey records; releasing it stops and processes
+- [x] holding the hotkey records; releasing it stops and processes
+- [x] successful processing puts non-empty text on the clipboard
 - [ ] a recording shorter than 0.5 seconds is discarded without clipboard change
 - [ ] a held recording automatically stops and submits at five minutes
 - [ ] HUD is nonactivating, floats above normal windows, and uses native glass
@@ -40,7 +41,7 @@ content or audio paths into the QA record.
 
 ## Privacy and lifecycle
 
-- [ ] no `Billie Flow-*.wav` remains after success
+- [x] no `Billie Flow-*.wav` remains after success
 - [ ] no temporary audio remains after worker error
 - [ ] no temporary audio remains after cancellation or app quit
 - [ ] no worker remains after app quit or cancellation
@@ -123,3 +124,11 @@ The file is now opened with an explicit processing format matching the
 converter output. A direct integration smoke converted 48 kHz stereo float
 buffers through the recorder path, finalized the output, and read it back as a
 valid 16 kHz mono Int16 WAV before the full release suite passed again.
+
+## Successful physical flow
+
+After both microphone-path fixes were installed, a real hold-to-record and
+release-to-process attempt completed without a new crash. The app remained
+running, the persistent worker remained alive as designed, the clipboard held
+a non-empty result, and no temporary recording remained. This verifies the
+primary installed-app flow without storing or recording the dictated content.
