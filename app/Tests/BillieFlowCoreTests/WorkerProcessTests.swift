@@ -88,6 +88,80 @@ struct WorkerProcessTests {
         await worker.shutdown()
         #expect(!processExists(secondPID))
     }
+
+    @Test func installerRunsPinnedLocalSetupPhasesWithoutModels() async throws {
+        let configuration = installConfiguration()
+        let runner = RecordingInstallRunner()
+        let fileSystem = FakeInstallFileSystem(configuration: configuration)
+        let installer = WorkerRuntimeInstaller(
+            configuration: configuration,
+            runner: runner,
+            fileSystem: fileSystem
+        )
+        let phases = InstallPhaseCollector()
+
+        try await installer.install { phases.append($0) }
+
+        #expect(phases.values == WorkerRuntimeInstallPhase.allCases)
+        let commands = await runner.commands
+        #expect(commands.count == 6)
+        #expect(commands[0].executableURL == configuration.uvURL)
+        #expect(commands[0].arguments == [
+            "venv", "--clear", "--python", "3.12", "--seed",
+            configuration.virtualEnvironmentURL.path,
+        ])
+        #expect(commands[0].environment["UV_NO_CACHE"] == "1")
+        #expect(commands[0].environment["UV_PYTHON_INSTALL_DIR"] == configuration.runtimeRootURL.appendingPathComponent("python").path)
+        #expect(commands[1].arguments.contains(configuration.requirementsURL.path))
+        #expect(commands[2].arguments.contains(configuration.workerSourceURL.path))
+        #expect(commands[3].arguments == ["-m", "billie_flow_worker.prefetch", "--component", "asr"])
+        #expect(commands[4].arguments == ["-m", "billie_flow_worker.prefetch", "--component", "cleanup"])
+        #expect(commands[5].arguments.joined(separator: " ").contains("billie_flow_worker"))
+        #expect(WorkerRuntimeInstallConfiguration.uvVersion == "0.11.28")
+    }
+
+    @Test func installerReportsTheFailingPhaseAndCanRetry() async throws {
+        let configuration = installConfiguration()
+        let runner = RecordingInstallRunner(exitStatuses: [0, 23])
+        let installer = WorkerRuntimeInstaller(
+            configuration: configuration,
+            runner: runner,
+            fileSystem: FakeInstallFileSystem(configuration: configuration)
+        )
+
+        do {
+            try await installer.install()
+            Issue.record("Installer unexpectedly passed a failed uv command.")
+        } catch let error as WorkerRuntimeInstallError {
+            #expect(error == .commandFailed(.installingRuntime, 23))
+        }
+
+        await runner.replaceExitStatuses(with: Array(repeating: 0, count: 6))
+        try await installer.install()
+        #expect(await runner.commands.count == 8)
+    }
+
+    @Test func installerCancellationStopsTheActiveProcess() async throws {
+        let configuration = installConfiguration()
+        let runner = RecordingInstallRunner(blockFirstCommand: true)
+        let installer = WorkerRuntimeInstaller(
+            configuration: configuration,
+            runner: runner,
+            fileSystem: FakeInstallFileSystem(configuration: configuration)
+        )
+        let installation = Task { try await installer.install() }
+        try await waitUntilAsync { await runner.hasStarted }
+
+        installation.cancel()
+        do {
+            try await installation.value
+            Issue.record("Cancelled installation unexpectedly completed.")
+        } catch is CancellationError {
+            // Cancellation is the public contract.
+        }
+        try await waitUntilAsync { await runner.wasCancelled }
+        #expect(await runner.wasCancelled)
+    }
 }
 
 private final class TestBundleMarker {}
@@ -99,6 +173,65 @@ private final class PhaseCollector: @unchecked Sendable {
     func append(_ phase: WorkerPhase) { lock.withLock { storage.append(phase) } }
 }
 
+private final class InstallPhaseCollector: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage: [WorkerRuntimeInstallPhase] = []
+    var values: [WorkerRuntimeInstallPhase] { lock.withLock { storage } }
+    func append(_ phase: WorkerRuntimeInstallPhase) { lock.withLock { storage.append(phase) } }
+}
+
+private actor RecordingInstallRunner: WorkerRuntimeInstallProcessRunning {
+    private(set) var commands: [WorkerRuntimeInstallCommand] = []
+    private var exitStatuses: [Int32]
+    private let blockFirstCommand: Bool
+    private(set) var wasCancelled = false
+
+    init(exitStatuses: [Int32] = [], blockFirstCommand: Bool = false) {
+        self.exitStatuses = exitStatuses
+        self.blockFirstCommand = blockFirstCommand
+    }
+
+    var hasStarted: Bool { !commands.isEmpty }
+
+    func run(_ command: WorkerRuntimeInstallCommand) async throws -> Int32 {
+        commands.append(command)
+        if blockFirstCommand, commands.count == 1 {
+            try await Task.sleep(for: .seconds(30))
+        }
+        return exitStatuses.isEmpty ? 0 : exitStatuses.removeFirst()
+    }
+
+    func cancel() async {
+        wasCancelled = true
+    }
+
+    func replaceExitStatuses(with values: [Int32]) {
+        exitStatuses = values
+    }
+}
+
+private struct FakeInstallFileSystem: WorkerRuntimeInstallFileSystem {
+    let configuration: WorkerRuntimeInstallConfiguration
+
+    func createDirectory(at url: URL) throws {}
+
+    func fileExists(atPath path: String) -> Bool {
+        path == configuration.pyprojectURL.path || path == configuration.requirementsURL.path
+    }
+
+    func isExecutableFile(atPath path: String) -> Bool {
+        path == configuration.uvURL.path || path == configuration.workerExecutableURL.path
+    }
+}
+
+private func installConfiguration() -> WorkerRuntimeInstallConfiguration {
+    WorkerRuntimeInstallConfiguration(
+        uvURL: URL(fileURLWithPath: "/bundle/Bootstrap/uv"),
+        workerSourceURL: URL(fileURLWithPath: "/bundle/Bootstrap/worker", isDirectory: true),
+        runtimeRootURL: URL(fileURLWithPath: "/home/Library/Application Support/Billie Flow/runtime", isDirectory: true)
+    )
+}
+
 private enum WaitError: Error { case timedOut }
 
 private func waitUntil(
@@ -108,6 +241,18 @@ private func waitUntil(
     let clock = ContinuousClock()
     let deadline = clock.now.advanced(by: timeout)
     while !condition() {
+        guard clock.now < deadline else { throw WaitError.timedOut }
+        try await Task.sleep(for: .milliseconds(20))
+    }
+}
+
+private func waitUntilAsync(
+    timeout: Duration = .seconds(5),
+    condition: @escaping @Sendable () async -> Bool
+) async throws {
+    let clock = ContinuousClock()
+    let deadline = clock.now.advanced(by: timeout)
+    while !(await condition()) {
         guard clock.now < deadline else { throw WaitError.timedOut }
         try await Task.sleep(for: .milliseconds(20))
     }

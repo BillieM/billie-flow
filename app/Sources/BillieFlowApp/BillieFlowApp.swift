@@ -53,7 +53,11 @@ struct BillieFlowApp: App {
 @MainActor
 private final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        guard UserDefaults.standard.data(forKey: "recordHotKey") == nil else { return }
+        let worker = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Application Support/Billie Flow/runtime/.venv/bin/billie-flow-worker")
+        let needsShortcut = UserDefaults.standard.data(forKey: "recordHotKey") == nil
+        let needsWorker = !FileManager.default.isExecutableFile(atPath: worker.path)
+        guard needsShortcut || needsWorker else { return }
         DispatchQueue.main.async {
             NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
         }

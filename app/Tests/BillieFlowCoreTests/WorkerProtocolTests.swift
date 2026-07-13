@@ -4,6 +4,14 @@ import Testing
 
 @Suite("Worker protocol v1")
 struct WorkerProtocolTests {
+    @Test func helloUsesCurrentAppVersionWithoutChangingProtocolV1() throws {
+        let data = try WorkerProtocol.hello(id: "hello-1")
+        let object = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        #expect(object["protocol_version"] as? Int == 1)
+        let payload = try #require(object["payload"] as? [String: Any])
+        #expect(payload["client_version"] as? String == "0.2.0")
+    }
+
     @Test func processCommandContainsFrozenV1Fields() throws {
         let data = try WorkerProtocol.process(
             id: "process-1", audioPath: "/tmp/recording.wav", style: .lightCleanup, debug: false

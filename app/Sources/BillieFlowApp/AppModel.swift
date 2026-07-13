@@ -13,6 +13,7 @@ final class AppModel: ObservableObject {
     @Published private(set) var hotKey: HotKey?
     @Published private(set) var hotKeyError: String?
     @Published private(set) var workerHealth: WorkerHealth
+    @Published private(set) var workerInstallStatus: WorkerRuntimeInstallStatus = .idle
     @Published var launchAtLogin: Bool {
         didSet {
             guard launchAtLogin != oldValue, !isUpdatingLogin else { return }
@@ -29,6 +30,7 @@ final class AppModel: ObservableObject {
     private let recorder = AudioRecorder()
     private let worker: WorkerProcess
     private let workerExecutableURL: URL
+    private let workerInstaller: WorkerRuntimeInstaller?
     private let globalHotKey = GlobalHotKey()
     private let hud = HUDPanelController()
     private var machine: FlowStateMachine
@@ -36,11 +38,16 @@ final class AppModel: ObservableObject {
     private var recordingStartTask: Task<Void, Never>?
     private var warmupTask: Task<Void, any Error>?
     private var processingTask: Task<Void, Never>?
+    private var workerInstallTask: Task<Void, Never>?
     private var dismissalTask: Task<Void, Never>?
     private var maximumDurationTask: Task<Void, Never>?
     private var isUpdatingLogin = false
 
-    init(defaults: UserDefaults = .standard, workerConfiguration: WorkerLaunchConfiguration? = nil) {
+    init(
+        defaults: UserDefaults = .standard,
+        workerConfiguration: WorkerLaunchConfiguration? = nil,
+        workerInstaller: WorkerRuntimeInstaller? = nil
+    ) {
         self.defaults = defaults
         let storedStyle = SettingsPolicy.style(storedValue: defaults.string(forKey: Keys.style))
         style = storedStyle
@@ -56,6 +63,7 @@ final class AppModel: ObservableObject {
             executableExists: FileManager.default.isExecutableFile(atPath: configuration.executableURL.path)
         )
         worker = WorkerProcess(configuration: configuration)
+        self.workerInstaller = workerInstaller ?? Self.defaultWorkerInstaller()
         let staleDirectory = RecordingStorage.directory()
         if FileManager.default.fileExists(atPath: staleDirectory.path) {
             _ = try? RecordingStorage.removeStaleWAVs(in: staleDirectory)
@@ -110,6 +118,52 @@ final class AppModel: ObservableObject {
         Task { await worker.cancel() }
     }
 
+    func installWorker() {
+        guard workerInstallTask == nil else { return }
+        guard let workerInstaller else {
+            workerInstallStatus = .failed("The app is missing its bundled setup files. Download Billie Flow again.")
+            return
+        }
+
+        warmupTask = nil
+        workerHealth = .connecting
+        workerInstallStatus = .installing(.preparingPython)
+        workerInstallTask = Task { [weak self, workerInstaller] in
+            do {
+                try await workerInstaller.install { [weak self] phase in
+                    Task { @MainActor in
+                        self?.workerInstallStatus = .installing(phase)
+                    }
+                }
+                guard let self else { return }
+                let installed = FileManager.default.isExecutableFile(atPath: workerExecutableURL.path)
+                workerHealth = SettingsPolicy.workerHealth(executableExists: installed)
+                workerInstallStatus = installed
+                    ? .installed
+                    : .failed("The local runtime could not be verified. Try installing it again.")
+                workerInstallTask = nil
+            } catch is CancellationError {
+                guard let self else { return }
+                workerHealth = SettingsPolicy.workerHealth(
+                    executableExists: FileManager.default.isExecutableFile(atPath: workerExecutableURL.path)
+                )
+                workerInstallStatus = .cancelled
+                workerInstallTask = nil
+            } catch {
+                guard let self else { return }
+                workerHealth = .failed(error.localizedDescription)
+                workerInstallStatus = .failed(error.localizedDescription)
+                workerInstallTask = nil
+            }
+        }
+    }
+
+    func cancelWorkerInstallation() {
+        guard workerInstallTask != nil else { return }
+        workerInstallTask?.cancel()
+        Task { [workerInstaller] in await workerInstaller?.cancel() }
+    }
+
     func resetStatus() {
         guard state.requiresExplicitDismissal else { return }
         transition(.dismiss)
@@ -122,9 +176,11 @@ final class AppModel: ObservableObject {
         let taskOwningTemporaryAudio = processingTask
         taskOwningTemporaryAudio?.cancel()
         processingTask = nil
+        workerInstallTask?.cancel()
         maximumDurationTask?.cancel()
         recorder.cancel()
-        Task { [worker] in
+        Task { [worker, workerInstaller] in
+            await workerInstaller?.cancel()
             await worker.cancel()
             await taskOwningTemporaryAudio?.value
             NSApp.terminate(nil)
@@ -133,6 +189,10 @@ final class AppModel: ObservableObject {
 
     private func hotKeyPressed() {
         guard !pressHeld, state.allowsRecordingStart else { return }
+        guard !workerInstallStatus.isInstalling else {
+            transition(.failed("Finish local setup before recording."))
+            return
+        }
         pressHeld = true
         hud.beginRecordingOnPointerScreen()
         startWarmupIfNeeded()
@@ -294,5 +354,19 @@ final class AppModel: ObservableObject {
             executableURL: FileManager.default.homeDirectoryForCurrentUser
                 .appendingPathComponent("Library/Application Support/Billie Flow/runtime/.venv/bin/billie-flow-worker")
         )
+    }
+
+    private static func defaultWorkerInstaller() -> WorkerRuntimeInstaller? {
+        guard let resourceURL = Bundle.main.resourceURL else { return nil }
+        let bootstrap = resourceURL.appendingPathComponent("Bootstrap", isDirectory: true)
+        let uv = bootstrap.appendingPathComponent("uv", isDirectory: false)
+        let worker = bootstrap.appendingPathComponent("worker", isDirectory: true)
+        let runtimeRoot = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Application Support/Billie Flow/runtime", isDirectory: true)
+        return WorkerRuntimeInstaller(configuration: WorkerRuntimeInstallConfiguration(
+            uvURL: uv,
+            workerSourceURL: worker,
+            runtimeRootURL: runtimeRoot
+        ))
     }
 }

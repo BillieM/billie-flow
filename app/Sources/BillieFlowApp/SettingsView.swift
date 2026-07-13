@@ -4,6 +4,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject var model: AppModel
+    @State private var showingInstallConsent = false
 
     var body: some View {
         Form {
@@ -36,23 +37,72 @@ struct SettingsView: View {
 
             Section("Local worker") {
                 LabeledContent("Status", value: healthText)
-                if model.workerHealth == .executableMissing {
-                    Text("Install the local runtime from the repository in Terminal:")
-                        .font(.caption).foregroundStyle(.secondary)
-                    HStack {
-                        Text("scripts/bootstrap_worker.sh").font(.system(.caption, design: .monospaced))
-                        Spacer()
-                        Button("Copy") {
-                            NSPasteboard.general.clearContents()
-                            NSPasteboard.general.setString("scripts/bootstrap_worker.sh", forType: .string)
-                        }
-                    }
-                }
+                workerSetupControls
             }
+        }
+        .alert("Install local speech models?", isPresented: $showingInstallConsent) {
+            Button("Cancel", role: .cancel) {}
+            Button("Install") { model.installWorker() }
+        } message: {
+            Text("Billie Flow will download about 3.5 GB, including fixed models from Hugging Face. English speech and inference stay local. Setup requires Apple Silicon and macOS 26.")
         }
         .formStyle(.grouped)
         .padding()
         .frame(width: 470, height: 500)
+    }
+
+    @ViewBuilder
+    private var workerSetupControls: some View {
+        switch model.workerInstallStatus {
+        case let .installing(phase):
+            HStack(spacing: 10) {
+                ProgressView().controlSize(.small)
+                Text(phaseText(phase))
+            }
+            Text("Keep Billie Flow open while setup finishes. Nothing is sent to a transcription service.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Button("Cancel setup", role: .destructive) { model.cancelWorkerInstallation() }
+        case let .failed(message):
+            Text(message).font(.caption).foregroundStyle(.red)
+            Button("Retry installation…") { showingInstallConsent = true }
+        case .cancelled:
+            Text("Setup was cancelled. No recording can start until the local runtime is installed.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Button("Retry installation…") { showingInstallConsent = true }
+        case .installed:
+            Text("The fixed speech and cleanup models are installed locally.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        case .idle:
+            switch model.workerHealth {
+            case .executableMissing:
+                Text("Setup downloads about 3.5 GB, including models from Hugging Face. English-only inference stays local. Requires Apple Silicon and macOS 26.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Button("Install local models…") { showingInstallConsent = true }
+            case .failed:
+                Text("The local runtime could not start. Reinstalling keeps setup local and restores the fixed model environment.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Button("Reinstall local models…") { showingInstallConsent = true }
+            default:
+                Text("The local runtime is installed. Models load on the first recording.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private func phaseText(_ phase: WorkerRuntimeInstallPhase) -> String {
+        switch phase {
+        case .preparingPython: "Preparing Python"
+        case .installingRuntime: "Installing local runtime"
+        case .downloadingSpeechModel: "Downloading speech model"
+        case .downloadingCleanupModel: "Downloading cleanup model"
+        case .verifying: "Verifying setup"
+        }
     }
 
     private var styleDescription: String {

@@ -1,28 +1,156 @@
 # Billie Flow
 
-Billie Flow now contains the private native macOS v0.1 implementation alongside
-the model-evaluation lab that selected its fixed local models. The app is a
-macOS 26 Swift 6 menu-bar utility: hold a custom global hotkey, speak, release,
-and receive locally transcribed and lightly cleaned text on the clipboard.
+Billie Flow is an unsupported proof of concept for privacy-preserving local
+speech to text on Apple Silicon. It is a macOS 26 Swift 6 menu-bar app: hold a
+custom global hotkey, speak, release, and receive locally transcribed and
+lightly cleaned English text on the clipboard.
 
-Native implementation entry points:
+This repository contains the native app, its local Python/MLX worker, the model
+evaluation lab used to select the fixed models, and the automated acceptance
+gate. It is source code and a working demonstration, not a maintained product.
+There is no support commitment, updater, compatibility promise, App Store
+release, or notarised distribution.
+
+## Supported setup
+
+- Apple Silicon Mac. The release app and its bundled setup executable are
+  arm64-only; Intel Macs are not supported.
+- macOS 26 or later.
+- English dictation only. The worker protocol fixes the language to `en`.
+- About 3.5 GB of free space for the Python runtime and model downloads, plus
+  working space and any existing Hugging Face cache overhead.
+- An internet connection for the one-time runtime, dependency, and model setup.
+
+## Install and run
+
+1. Download `Billie-Flow-v0.2.0-apple-silicon.zip` and its checksum from
+   [GitHub Releases](https://github.com/BillieM/billie-flow/releases), unzip it,
+   and move `Billie Flow.app` to `/Applications`.
+2. Open the app. Because this proof-of-concept build is not notarised, macOS may
+   block it; follow the bounded Gatekeeper steps below if you choose to proceed.
+3. When the worker is missing, Settings opens automatically. Choose
+   **Install local models…**, review the **Install local speech models?** consent
+   alert, then choose **Install**. Nothing large is downloaded before this
+   confirmation.
+4. The app prepares Python, installs the local runtime, downloads the speech
+   model, downloads the cleanup model, and verifies the setup. You can cancel
+   during setup or retry a failed installation. The install uses the pinned
+   `uv` executable and worker payload bundled inside the app; release users do
+   not need Terminal, Homebrew, or a repository checkout.
+5. Approve microphone access, choose a shortcut containing Command or Control,
+   then hold the shortcut while speaking and release it to process. The result
+   is copied to the clipboard; the app does not paste it.
+
+The consented setup installs roughly 1.1 GB under
+`~/Library/Application Support/Billie Flow/runtime` and fetches roughly 2.5 GB
+of fixed model data into the Hugging Face cache. Exact transfer and disk use
+vary when dependencies or model files are already cached.
+
+### Gatekeeper warning
+
+The proof-of-concept build is ad-hoc signed and is **not notarised by Apple**.
+macOS therefore cannot verify the developer or check that the downloaded build
+was notarised. Do not override Gatekeeper unless you obtained the app from this
+repository, verified any published checksum, and accept that risk.
+
+After trying to open the app once, open **System Settings → Privacy & Security**,
+scroll to **Security**, choose **Open Anyway**, authenticate, and confirm
+**Open**. Apple documents this exception flow in
+[Open a Mac app from an unknown developer](https://support.apple.com/en-gb/guide/mac-help/mh40616/mac).
+Do not disable Gatekeeper globally.
+
+## Models and dependencies
+
+The app has no model picker. Production inference uses exactly:
+
+- ASR: [`mlx-community/whisper-large-v3-turbo`](https://huggingface.co/mlx-community/whisper-large-v3-turbo),
+  an MLX conversion of
+  [`openai/whisper-large-v3-turbo`](https://huggingface.co/openai/whisper-large-v3-turbo)
+  (MIT licensed).
+- Cleanup: [`mlx-community/Qwen2.5-1.5B-Instruct-4bit`](https://huggingface.co/mlx-community/Qwen2.5-1.5B-Instruct-4bit),
+  an MLX conversion of
+  [`Qwen/Qwen2.5-1.5B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct)
+  (Apache 2.0 licensed).
+
+The release app bundles `uv==0.11.28`, the worker source, and the dependency
+lock, but no model weights. The installed worker uses Python 3.12 and pins its
+core MLX stack to `mlx==0.32.0`,
+`mlx-metal==0.32.0`, `mlx-whisper==0.4.3`, and `mlx-lm==0.31.3`. Every resolved
+Python dependency is pinned in `worker/requirements.lock`. Model weights are
+downloaded from Hugging Face and are not included in this repository or covered
+by this repository's MIT licence; their own model cards and licences apply.
+The source code is available under the [MIT License](LICENSE).
+
+## Privacy and local storage
+
+- Inference runs locally after setup. The app does not upload audio or
+  transcripts. The consented installer contacts the Python and model download
+  services used by `uv` and Hugging Face.
+- Each recording is a temporary 16 kHz mono WAV. The app deletes it after
+  success, failure, cancellation, and quit, and removes stale owned WAVs on the
+  next launch after a crash.
+- Transcript text is held only for processing and copied to the system
+  clipboard. Billie Flow keeps no transcript history or content logs. Other
+  applications with clipboard access may still read clipboard contents.
+- The runtime is stored under
+  `~/Library/Application Support/Billie Flow/runtime`. Model files remain in
+  the shared Hugging Face cache under `~/.cache/huggingface/hub`.
+- Settings are stored in the standard preferences domain
+  `uk.billiem.BillieFlow`.
+
+See `docs/native-v0.2.md` for the full lifecycle and storage boundary.
+
+## Uninstall
+
+Turn off **Launch Billie Flow at login** in the app first, or remove it from
+**System Settings → General → Login Items**. Then quit the app and delete:
+
+- `/Applications/Billie Flow.app`
+- `~/Library/Application Support/Billie Flow`
+- `~/Library/Preferences/uk.billiem.BillieFlow.plist`
+
+To reclaim model space as well, remove only these model directories from the
+shared Hugging Face cache:
+
+- `~/.cache/huggingface/hub/models--mlx-community--whisper-large-v3-turbo`
+- `~/.cache/huggingface/hub/models--mlx-community--Qwen2.5-1.5B-Instruct-4bit`
+
+Do not delete the whole Hugging Face cache if other local tools use it.
+
+## Repository layout and development
 
 - `app/`: Swift app, Xcode project, and Swift tests.
 - `worker/`: persistent Python 3.12 NDJSON model worker and tests.
 - `contracts/`: frozen `billie-flow.worker.v1` wire contract.
-- `scripts/bootstrap_worker.sh`: idempotent local runtime and model setup.
-- `docs/native-v0.1.md`: architecture, scope, setup, and development.
-- `docs/native-v0.1-qa.md`: automated and manual acceptance checklist.
+- `scripts/bootstrap_worker.sh`: developer-only local runtime setup.
+- `docs/native-v0.2.md`: public release architecture, setup, and privacy boundary.
+- `docs/native-v0.1-qa.md`: historical v0.1 automated acceptance record.
+
+Run the model-free repository tests with:
 
 ```sh
 make test
+```
+
+For development outside the packaged setup flow, install the current checkout's
+worker and fixed models with:
+
+```sh
 scripts/bootstrap_worker.sh
+```
+
+With full Xcode installed, build the arm64 app, release zip, and SHA-256 file:
+
+```sh
 scripts/package_release.sh
 ```
 
-The app is local-only and copy-only. It stores no transcript history, does not
-request Accessibility or Input Monitoring, and does not include auto-paste,
-model selection, notarization, an updater, or a public distribution path.
+The full system acceptance gate is intentionally local because it exercises the
+packaged macOS app and production MLX models:
+
+```sh
+scripts/run_system_acceptance.sh
+```
 
 ## Model evaluation lab
 
@@ -95,7 +223,7 @@ real local cleanup outputs. If a model path is blocked or renamed during setup,
 record the setup finding instead of silently replacing it with a different
 model. Local raw receipts under `experiments/*/raw/` are ignored by Git.
 
-## Planned Model Matrix
+## Lab Model Matrix
 
 ASR backends:
 

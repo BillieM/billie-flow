@@ -1,5 +1,10 @@
 # Native v0.1 QA
 
+This is the historical acceptance record for the private v0.1 milestone. The
+public v0.2 release changes the supported architecture and setup path; its
+current contract is documented in `docs/native-v0.2.md` and must pass the
+updated zero-skip system gate before release.
+
 Record exact results, machine conditions, and timings. Never paste transcript
 content or audio paths into the QA record.
 
@@ -100,9 +105,9 @@ automated structural assertions and are not assigned to the user for testing.
 
 ## Final installation state
 
-- Repository moved with history and ignored lab assets to
-  `/Users/billie/Developer/billie-flow`.
-- Clean-cache `scripts/verify_native_v1.sh --full` passed at the permanent path.
+- Repository moved with history and ignored lab assets to its permanent
+  Developer checkout.
+- Clean-cache `scripts/verify_native_v1.sh --full` passed there.
 - The final production-model acceptance passed there in 2.059 seconds warm
   processing, with all expected phases, no warning, and no private stderr content.
 - The ad-hoc-signed universal Release app is installed at

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic v0.1 release acceptance without touching the installed app.
+"""Deterministic public proof-of-concept acceptance without touching the installed app.
 
 The harness intentionally treats worker stdout as a private protocol transport. It
 never includes subprocess output, audio paths, or transcript text in its report.
@@ -146,7 +146,8 @@ def app_metadata() -> str:
     require(isinstance(microphone, str) and microphone.strip(), "microphone usage text is missing")
     require("NSAccessibilityUsageDescription" not in info, "Accessibility usage text is present")
     require("NSInputMonitoringUsageDescription" not in info, "Input Monitoring usage text is present")
-    return "LSUIElement is enabled; microphone purpose is declared; no Accessibility/Input Monitoring purpose is declared"
+    require(info.get("CFBundleShortVersionString") == "0.2.0", "public Release version is not 0.2.0")
+    return "v0.2.0 metadata, LSUIElement, microphone purpose, and no Accessibility/Input Monitoring purpose verified"
 
 
 def extract_entitlements(output: str) -> dict[str, Any]:
@@ -175,8 +176,28 @@ def signing_and_architectures() -> str:
     archs = run_command(["lipo", "-archs", str(executable)], timeout=30)
     require(archs.returncode == 0, "binary architectures could not be read")
     actual = set(archs.stdout.split())
-    require({"arm64", "x86_64"}.issubset(actual), "Release binary is not universal arm64/x86_64")
-    return "strict ad-hoc signature and universal arm64/x86_64 executable verified"
+    require(actual == {"arm64"}, "Release executable must be Apple Silicon arm64 only")
+    return "strict ad-hoc signature and Apple Silicon-only arm64 executable verified"
+
+
+def bootstrap_payload() -> str:
+    bootstrap = DEFAULT_APP / "Contents/Resources/Bootstrap"
+    uv = bootstrap / "uv"
+    worker = bootstrap / "worker"
+    require(uv.is_file() and os.access(uv, os.X_OK), "bundled uv bootstrap executable is missing")
+    uv_version = run_command([str(uv), "--version"], timeout=30)
+    require(uv_version.returncode == 0, "bundled uv could not run")
+    require(uv_version.stdout.strip().startswith("uv 0.11.28"), "bundled uv version is not pinned")
+    uv_archs = run_command(["lipo", "-archs", str(uv)], timeout=30)
+    require(uv_archs.returncode == 0 and uv_archs.stdout.split() == ["arm64"], "bundled uv is not arm64")
+    require((bootstrap / "uv-LICENSE-APACHE").is_file(), "bundled uv Apache license is missing")
+    require((bootstrap / "uv-LICENSE-MIT").is_file(), "bundled uv MIT license is missing")
+    require((worker / "pyproject.toml").is_file(), "bundled worker package metadata is missing")
+    require((worker / "requirements.lock").is_file(), "bundled pinned worker requirements are missing")
+    require((worker / "src/billie_flow_worker/__main__.py").is_file(), "bundled worker source is incomplete")
+    model_weights = list(bootstrap.rglob("*.safetensors")) + list(bootstrap.rglob("*.npz"))
+    require(not model_weights, "model weights must be downloaded from Hugging Face, not bundled")
+    return "pinned arm64 uv, licenses, worker source/lock, and no bundled model weights verified"
 
 
 def permission_surface() -> str:
@@ -215,6 +236,7 @@ def ui_and_settings_contract() -> str:
     settings = (ROOT / "app/Sources/BillieFlowApp/SettingsView.swift").read_text()
     policy = (ROOT / "app/Sources/BillieFlowCore/RecordingPolicy.swift").read_text()
     lifecycle_tests = (ROOT / "app/Tests/BillieFlowCoreTests/FlowStateTests.swift").read_text()
+    installer_tests = (ROOT / "app/Tests/BillieFlowCoreTests/WorkerProcessTests.swift").read_text()
 
     hud_tokens = {
         ".nonactivatingPanel",
@@ -235,6 +257,20 @@ def ui_and_settings_contract() -> str:
     require("try SMAppService.mainApp.unregister()" in app_model, "launch-at-login disable wiring is missing")
     require(app_model.count("SMAppService.mainApp.register()") == 1, "launch-at-login is registered outside the explicit toggle path")
 
+    setup_disclosures = {
+        "3.5 GB",
+        "Hugging Face",
+        "English-only",
+        "Apple Silicon",
+        "macOS 26",
+        "Install local models…",
+        "Install local speech models?",
+    }
+    require(all(token in settings for token in setup_disclosures), "first-launch setup disclosure is incomplete")
+    require("Button(\"Install\") { model.installWorker() }" in settings, "runtime install is not gated by the consent action")
+    require("installerRunsPinnedLocalSetupPhasesWithoutModels" in installer_tests, "model-free installer evidence is missing")
+    require("installerCancellationStopsTheActiveProcess" in installer_tests, "installer cancellation evidence is missing")
+
     require("Billie Flow keeps no transcript history." in settings, "no-history disclosure is missing")
     require("CoreData" not in app_model and "SwiftData" not in app_model and "ModelContainer" not in app_model, "transcript persistence framework appears in AppModel")
     require(app_model.count("defaults.set(") == 2, "settings persistence expanded beyond style and shortcut")
@@ -247,7 +283,7 @@ def ui_and_settings_contract() -> str:
     require("RecordingPolicy.disposition(for: 0.499) == .discardTooShort" in lifecycle_tests, "short-recording boundary test is missing")
     require("RecordingPolicy.disposition(for: 0.5) == .submit" in lifecycle_tests, "minimum submit boundary test is missing")
     require("RecordingPolicy.maximumDuration == 300" in lifecycle_tests, "five-minute policy test is missing")
-    return "HUD focus/Space/glass/pointer-screen, explicit login toggle, settings-only persistence, and 0.5s/5m recording policy are source-and-test verified"
+    return "HUD, explicit setup consent/cancellation, login toggle, settings-only persistence, and recording policy are source-and-test verified"
 
 
 def pid_alive(pid: int) -> bool:
@@ -335,6 +371,10 @@ def isolated_app_launch(seconds: float) -> str:
         stderr = stderr_path.read_text(encoding="utf-8", errors="replace") if stderr_path.exists() else ""
         require(not application_pids(executable), "isolated app process remained after termination")
         require(not list(isolated.rglob("*.wav")), "isolated app left temporary audio behind")
+        require(
+            not (home / "Library/Application Support/Billie Flow/runtime").exists(),
+            "app started the large runtime/model installation without consent",
+        )
         require(PRIVATE_FAKE_TEXT not in stdout + stderr, "private protocol text appeared in app logs")
 
     time.sleep(1)
@@ -670,6 +710,7 @@ def main() -> int:
 
     acceptance.run("app.metadata", app_metadata)
     acceptance.run("app.signature_and_architectures", signing_and_architectures)
+    acceptance.run("app.bootstrap_payload", bootstrap_payload)
     acceptance.run("app.permission_surface", permission_surface)
     acceptance.run("app.ui_and_settings_contract", ui_and_settings_contract)
     acceptance.run("app.isolated_launch", lambda: isolated_app_launch(args.launch_seconds))
@@ -698,7 +739,7 @@ def main() -> int:
 
     output = args.output.expanduser().resolve()
     report = write_report(acceptance, output)
-    print(f"Billie Flow v0.1 system acceptance: {report['status']}")
+    print(f"Billie Flow v0.2 system acceptance: {report['status']}")
     for check in acceptance.checks:
         print(f"{check.status.upper():4} {check.check_id}: {check.detail} ({check.seconds:.3f}s)")
     print(f"Machine report: {output}")

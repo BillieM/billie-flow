@@ -29,6 +29,309 @@ public struct WorkerLaunchConfiguration: Sendable, Equatable {
     }
 }
 
+public enum WorkerRuntimeInstallPhase: String, CaseIterable, Sendable {
+    case preparingPython
+    case installingRuntime
+    case downloadingSpeechModel
+    case downloadingCleanupModel
+    case verifying
+}
+
+public enum WorkerRuntimeInstallStatus: Equatable, Sendable {
+    case idle
+    case installing(WorkerRuntimeInstallPhase)
+    case installed
+    case cancelled
+    case failed(String)
+
+    public var isInstalling: Bool {
+        if case .installing = self { true } else { false }
+    }
+}
+
+public struct WorkerRuntimeInstallCommand: Equatable, Sendable {
+    public let executableURL: URL
+    public let arguments: [String]
+    public let environment: [String: String]
+
+    public init(executableURL: URL, arguments: [String], environment: [String: String] = [:]) {
+        self.executableURL = executableURL
+        self.arguments = arguments
+        self.environment = environment
+    }
+}
+
+public protocol WorkerRuntimeInstallProcessRunning: Sendable {
+    func run(_ command: WorkerRuntimeInstallCommand) async throws -> Int32
+    func cancel() async
+}
+
+public protocol WorkerRuntimeInstallFileSystem: Sendable {
+    func createDirectory(at url: URL) throws
+    func fileExists(atPath path: String) -> Bool
+    func isExecutableFile(atPath path: String) -> Bool
+}
+
+public struct LocalWorkerRuntimeInstallFileSystem: WorkerRuntimeInstallFileSystem {
+    private let fileManager: FileManager
+
+    public init(fileManager: FileManager = .default) {
+        self.fileManager = fileManager
+    }
+
+    public func createDirectory(at url: URL) throws {
+        try fileManager.createDirectory(at: url, withIntermediateDirectories: true)
+    }
+
+    public func isExecutableFile(atPath path: String) -> Bool {
+        fileManager.isExecutableFile(atPath: path)
+    }
+
+    public func fileExists(atPath path: String) -> Bool {
+        fileManager.fileExists(atPath: path)
+    }
+}
+
+public enum WorkerRuntimeInstallError: LocalizedError, Equatable, Sendable {
+    case setupAlreadyRunning
+    case bundledUVIsMissing
+    case bundledWorkerIsMissing
+    case commandFailed(WorkerRuntimeInstallPhase, Int32)
+    case verificationFailed
+
+    public var errorDescription: String? {
+        switch self {
+        case .setupAlreadyRunning:
+            "Local setup is already running."
+        case .bundledUVIsMissing:
+            "The app is missing its bundled setup helper. Download Billie Flow again."
+        case .bundledWorkerIsMissing:
+            "The app is missing its bundled local worker. Download Billie Flow again."
+        case let .commandFailed(phase, _):
+            "Local setup failed while \(phase.failureDescription). Check your connection and try again."
+        case .verificationFailed:
+            "Local setup finished, but the worker could not be verified. Try installing it again."
+        }
+    }
+}
+
+public struct WorkerRuntimeInstallConfiguration: Equatable, Sendable {
+    public static let uvVersion = "0.11.28"
+
+    public let uvURL: URL
+    public let workerSourceURL: URL
+    public let runtimeRootURL: URL
+
+    public init(uvURL: URL, workerSourceURL: URL, runtimeRootURL: URL) {
+        self.uvURL = uvURL
+        self.workerSourceURL = workerSourceURL
+        self.runtimeRootURL = runtimeRootURL
+    }
+
+    public var virtualEnvironmentURL: URL {
+        runtimeRootURL.appendingPathComponent(".venv", isDirectory: true)
+    }
+
+    public var pythonURL: URL {
+        virtualEnvironmentURL.appendingPathComponent("bin/python", isDirectory: false)
+    }
+
+    public var workerExecutableURL: URL {
+        virtualEnvironmentURL.appendingPathComponent("bin/billie-flow-worker", isDirectory: false)
+    }
+
+    public var requirementsURL: URL {
+        workerSourceURL.appendingPathComponent("requirements.lock", isDirectory: false)
+    }
+
+    public var pyprojectURL: URL {
+        workerSourceURL.appendingPathComponent("pyproject.toml", isDirectory: false)
+    }
+}
+
+public actor ProcessWorkerRuntimeInstallRunner: WorkerRuntimeInstallProcessRunning {
+    private var process: Process?
+
+    public init() {}
+
+    public func run(_ command: WorkerRuntimeInstallCommand) async throws -> Int32 {
+        guard process == nil else { throw WorkerRuntimeInstallError.setupAlreadyRunning }
+
+        let child = Process()
+        child.executableURL = command.executableURL
+        child.arguments = command.arguments
+        if !command.environment.isEmpty {
+            child.environment = ProcessInfo.processInfo.environment.merging(command.environment) { _, override in override }
+        }
+        child.standardOutput = FileHandle.nullDevice
+        child.standardError = FileHandle.nullDevice
+        try child.run()
+        process = child
+        defer { process = nil }
+
+        let status = await withTaskCancellationHandler {
+            await Task.detached(priority: .utility) {
+                child.waitUntilExit()
+                return child.terminationStatus
+            }.value
+        } onCancel: {
+            if child.isRunning { child.terminate() }
+        }
+        if Task.isCancelled { throw CancellationError() }
+        return status
+    }
+
+    public func cancel() {
+        guard let process, process.isRunning else { return }
+        process.terminate()
+    }
+}
+
+public actor WorkerRuntimeInstaller {
+    private let configuration: WorkerRuntimeInstallConfiguration
+    private let runner: any WorkerRuntimeInstallProcessRunning
+    private let fileSystem: any WorkerRuntimeInstallFileSystem
+    private var isRunning = false
+
+    public init(
+        configuration: WorkerRuntimeInstallConfiguration,
+        runner: any WorkerRuntimeInstallProcessRunning = ProcessWorkerRuntimeInstallRunner(),
+        fileSystem: any WorkerRuntimeInstallFileSystem = LocalWorkerRuntimeInstallFileSystem()
+    ) {
+        self.configuration = configuration
+        self.runner = runner
+        self.fileSystem = fileSystem
+    }
+
+    public func install(
+        onPhase: @escaping @Sendable (WorkerRuntimeInstallPhase) -> Void = { _ in }
+    ) async throws {
+        guard !isRunning else { throw WorkerRuntimeInstallError.setupAlreadyRunning }
+        guard fileSystem.isExecutableFile(atPath: configuration.uvURL.path) else {
+            throw WorkerRuntimeInstallError.bundledUVIsMissing
+        }
+        guard fileSystem.fileExists(atPath: configuration.pyprojectURL.path),
+              fileSystem.fileExists(atPath: configuration.requirementsURL.path)
+        else { throw WorkerRuntimeInstallError.bundledWorkerIsMissing }
+
+        isRunning = true
+        defer { isRunning = false }
+        try fileSystem.createDirectory(at: configuration.runtimeRootURL)
+
+        try await withTaskCancellationHandler {
+            for (phase, commands) in installSteps() {
+                try Task.checkCancellation()
+                onPhase(phase)
+                for command in commands {
+                    let status = try await runner.run(command)
+                    guard status == 0 else {
+                        throw WorkerRuntimeInstallError.commandFailed(phase, status)
+                    }
+                }
+            }
+        } onCancel: {
+            Task { await self.runner.cancel() }
+        }
+
+        guard fileSystem.isExecutableFile(atPath: configuration.workerExecutableURL.path) else {
+            throw WorkerRuntimeInstallError.verificationFailed
+        }
+    }
+
+    public func cancel() async {
+        await runner.cancel()
+    }
+
+    private func installSteps() -> [(WorkerRuntimeInstallPhase, [WorkerRuntimeInstallCommand])] {
+        let uv = configuration.uvURL
+        let python = configuration.pythonURL
+        let environment = [
+            "UV_NO_CACHE": "1",
+            "UV_NO_PROGRESS": "1",
+            "UV_PYTHON_INSTALL_DIR": configuration.runtimeRootURL
+                .appendingPathComponent("python", isDirectory: true).path,
+            "PYTHONDONTWRITEBYTECODE": "1",
+        ]
+        return [
+            (
+                .preparingPython,
+                [WorkerRuntimeInstallCommand(
+                    executableURL: uv,
+                    arguments: [
+                        "venv", "--clear", "--python", "3.12", "--seed",
+                        configuration.virtualEnvironmentURL.path,
+                    ],
+                    environment: environment
+                )]
+            ),
+            (
+                .installingRuntime,
+                [
+                    WorkerRuntimeInstallCommand(
+                        executableURL: uv,
+                        arguments: [
+                            "pip", "install", "--python", python.path,
+                            "-r", configuration.requirementsURL.path,
+                        ],
+                        environment: environment
+                    ),
+                    WorkerRuntimeInstallCommand(
+                        executableURL: uv,
+                        arguments: [
+                            "pip", "install", "--python", python.path,
+                            "--no-deps", "--no-build-isolation", configuration.workerSourceURL.path,
+                        ],
+                        environment: environment
+                    ),
+                ]
+            ),
+            (
+                .downloadingSpeechModel,
+                [WorkerRuntimeInstallCommand(
+                    executableURL: python,
+                    arguments: [
+                        "-m", "billie_flow_worker.prefetch", "--component", "asr",
+                    ],
+                    environment: environment
+                )]
+            ),
+            (
+                .downloadingCleanupModel,
+                [WorkerRuntimeInstallCommand(
+                    executableURL: python,
+                    arguments: [
+                        "-m", "billie_flow_worker.prefetch", "--component", "cleanup",
+                    ],
+                    environment: environment
+                )]
+            ),
+            (
+                .verifying,
+                [WorkerRuntimeInstallCommand(
+                    executableURL: python,
+                    arguments: [
+                        "-c",
+                        "import sys, billie_flow_worker; assert sys.version_info[:2] == (3, 12)",
+                    ],
+                    environment: environment
+                )]
+            ),
+        ]
+    }
+}
+
+private extension WorkerRuntimeInstallPhase {
+    var failureDescription: String {
+        switch self {
+        case .preparingPython: "preparing Python"
+        case .installingRuntime: "installing the local runtime"
+        case .downloadingSpeechModel: "downloading the speech model"
+        case .downloadingCleanupModel: "downloading the cleanup model"
+        case .verifying: "verifying the installation"
+        }
+    }
+}
+
 public enum WorkerProcessError: Error, Equatable, Sendable {
     case executableMissing(String)
     case launchFailed(String)

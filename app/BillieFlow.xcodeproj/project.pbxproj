@@ -272,7 +272,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Config/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.billiem.BillieFlow;
 				PRODUCT_NAME = "Billie Flow";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -289,7 +289,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Config/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.billiem.BillieFlow;
 				PRODUCT_NAME = "Billie Flow";
 				SWIFT_EMIT_LOC_STRINGS = YES;

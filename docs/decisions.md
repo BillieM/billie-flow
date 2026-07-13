@@ -165,7 +165,7 @@ App implication: debug/test modes can still return raw ASR, raw cleanup model
 output, and final corrected output. The public artifact should render selected
 evidence only.
 
-## 2026-07-12: Freeze Native v0.1 as a Narrow Private Utility
+## 2026-07-12: Freeze Native v0.1 as a Narrow Proof of Concept
 
 Decision: ship macOS 26-only Swift 6 sources for a menu-bar, hold-to-record,
 copy-only utility backed by one persistent Python 3.12 worker.
@@ -173,7 +173,8 @@ copy-only utility backed by one persistent Python 3.12 worker.
 The shared process boundary is the frozen `billie-flow.worker.v1` NDJSON
 contract. The first app has exactly three styles and fixed evidence-backed ASR
 and cleanup models. It has no model picker, vocabulary editor, auto-paste,
-transcript history, updater, notarization, App Store path, or public repository.
+transcript history, updater, notarization, App Store path, or automatic public
+release workflow.
 
 Reasoning:
 
@@ -192,3 +193,25 @@ failure, cancellation, and quit. The worker never deletes input audio.
 Cancellation terminates the persistent worker and escalates to kill before the
 app removes the audio. A later recording starts a fresh worker. This gives the
 app one unambiguous lifecycle owner and prevents inference from racing deletion.
+
+## 2026-07-13: Publish the Source Without Turning It Into a Product
+
+Decision: make the source and manually built app available as an unsupported
+proof of concept. Keep the narrow product boundary, local automated release
+gate, and fixed models. Do not add an updater, App Store work, automatic release
+pipeline, support commitment, or broader compatibility promise.
+
+The public documentation must state that the worker is Apple Silicon-only,
+recognition is fixed to English, first setup installs and downloads roughly
+3.5 GB, and the downloadable app is ad-hoc signed rather than notarised. The app
+must ask for explicit consent before its bundled bootstrap installs the runtime
+or downloads either model.
+
+Reasoning:
+
+- The source and experiment report are useful evidence for a project write-up.
+- Manual GitHub Releases are proportionate for a proof of concept.
+- Honest setup, model attribution, privacy, and Gatekeeper documentation matter
+  more here than product infrastructure.
+- Developer ID signing and notarisation can be added later without changing the
+  local app architecture.
