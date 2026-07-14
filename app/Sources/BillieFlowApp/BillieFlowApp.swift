@@ -4,11 +4,10 @@ import SwiftUI
 
 @main
 struct BillieFlowApp: App {
-    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var model = AppModel()
 
     var body: some Scene {
-        MenuBarExtra("Billie Flow", systemImage: menuIcon) {
+        MenuBarExtra {
             if let hotKey = model.hotKey {
                 Text("Hold \(hotKey.displayName) to record")
             } else {
@@ -32,6 +31,11 @@ struct BillieFlowApp: App {
             Divider()
             SettingsLink { Text(model.hotKey == nil ? "Set Up…" : "Settings…") }
             Button("Quit Billie Flow") { model.quit() }
+        } label: {
+            MenuBarLabel(
+                systemImage: menuIcon,
+                opensSettingsOnLaunch: model.hotKey == nil || model.workerHealth == .executableMissing
+            )
         }
 
         Settings {
@@ -50,16 +54,24 @@ struct BillieFlowApp: App {
     }
 }
 
-@MainActor
-private final class AppDelegate: NSObject, NSApplicationDelegate {
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        let worker = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Application Support/Billie Flow/runtime/.venv/bin/billie-flow-worker")
-        let needsShortcut = UserDefaults.standard.data(forKey: "recordHotKey") == nil
-        let needsWorker = !FileManager.default.isExecutableFile(atPath: worker.path)
-        guard needsShortcut || needsWorker else { return }
-        DispatchQueue.main.async {
-            NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-        }
+private struct MenuBarLabel: View {
+    @Environment(\.openSettings) private var openSettings
+    @State private var openedSettingsOnLaunch = false
+
+    let systemImage: String
+    let opensSettingsOnLaunch: Bool
+
+    var body: some View {
+        Image(systemName: systemImage)
+            .accessibilityLabel("Billie Flow")
+            .task {
+                guard opensSettingsOnLaunch, !openedSettingsOnLaunch else { return }
+                openedSettingsOnLaunch = true
+                await Task.yield()
+                await MainActor.run {
+                    NSApp.activate(ignoringOtherApps: true)
+                    openSettings()
+                }
+            }
     }
 }

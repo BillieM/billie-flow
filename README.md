@@ -23,7 +23,7 @@ release, or notarised distribution.
 
 ## Install and run
 
-1. Download `Billie-Flow-v0.2.0-apple-silicon.zip` and its checksum from
+1. Download `Billie-Flow-v0.2.1-apple-silicon.zip` and its checksum from
    [GitHub Releases](https://github.com/BillieM/billie-flow/releases), unzip it,
    and move `Billie Flow.app` to `/Applications`.
 2. Open the app. Because this proof-of-concept build is not notarised, macOS may

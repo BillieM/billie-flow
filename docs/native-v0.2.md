@@ -20,7 +20,7 @@ multilingual input is outside this proof of concept.
 
 ## Install
 
-1. Download `Billie-Flow-v0.2.0-apple-silicon.zip` and its `.sha256` file from
+1. Download `Billie-Flow-v0.2.1-apple-silicon.zip` and its `.sha256` file from
    [GitHub Releases](https://github.com/BillieM/billie-flow/releases).
 2. Verify the published checksum, unzip the archive, and move
    `Billie Flow.app` to `/Applications`.

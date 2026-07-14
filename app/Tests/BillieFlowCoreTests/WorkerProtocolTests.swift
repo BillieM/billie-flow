@@ -9,7 +9,7 @@ struct WorkerProtocolTests {
         let object = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
         #expect(object["protocol_version"] as? Int == 1)
         let payload = try #require(object["payload"] as? [String: Any])
-        #expect(payload["client_version"] as? String == "0.2.0")
+        #expect(payload["client_version"] as? String == "0.2.1")
     }
 
     @Test func processCommandContainsFrozenV1Fields() throws {

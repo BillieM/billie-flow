@@ -186,7 +186,7 @@ public enum WorkerProtocol {
     public static let cleanupModel = "mlx-community/Qwen2.5-1.5B-Instruct-4bit"
     public static let cleanupFallbackWarning = "cleanup_failed_raw_asr"
 
-    public static func hello(id: String, clientVersion: String = "0.2.0") throws -> Data {
+    public static func hello(id: String, clientVersion: String = "0.2.1") throws -> Data {
         try command(id: id, command: "hello", payload: [
             "client_name": "Billie Flow",
             "client_version": clientVersion,

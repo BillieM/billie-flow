@@ -146,8 +146,8 @@ def app_metadata() -> str:
     require(isinstance(microphone, str) and microphone.strip(), "microphone usage text is missing")
     require("NSAccessibilityUsageDescription" not in info, "Accessibility usage text is present")
     require("NSInputMonitoringUsageDescription" not in info, "Input Monitoring usage text is present")
-    require(info.get("CFBundleShortVersionString") == "0.2.0", "public Release version is not 0.2.0")
-    return "v0.2.0 metadata, LSUIElement, microphone purpose, and no Accessibility/Input Monitoring purpose verified"
+    require(info.get("CFBundleShortVersionString") == "0.2.1", "public Release version is not 0.2.1")
+    return "v0.2.1 metadata, LSUIElement, microphone purpose, and no Accessibility/Input Monitoring purpose verified"
 
 
 def extract_entitlements(output: str) -> dict[str, Any]:
@@ -231,6 +231,7 @@ def permission_surface() -> str:
 
 
 def ui_and_settings_contract() -> str:
+    app = (ROOT / "app/Sources/BillieFlowApp/BillieFlowApp.swift").read_text()
     hud = (ROOT / "app/Sources/BillieFlowApp/HUDPanel.swift").read_text()
     app_model = (ROOT / "app/Sources/BillieFlowApp/AppModel.swift").read_text()
     settings = (ROOT / "app/Sources/BillieFlowApp/SettingsView.swift").read_text()
@@ -270,6 +271,9 @@ def ui_and_settings_contract() -> str:
     require("Button(\"Install\") { model.installWorker() }" in settings, "runtime install is not gated by the consent action")
     require("installerRunsPinnedLocalSetupPhasesWithoutModels" in installer_tests, "model-free installer evidence is missing")
     require("installerCancellationStopsTheActiveProcess" in installer_tests, "installer cancellation evidence is missing")
+    require("@Environment(\\.openSettings)" in app, "first-launch Settings does not use SwiftUI openSettings")
+    require("openSettings()" in app, "first-launch Settings presentation is not wired")
+    require("showSettingsWindow:" not in app, "selector-based Settings presentation returned")
 
     require("Billie Flow keeps no transcript history." in settings, "no-history disclosure is missing")
     require("CoreData" not in app_model and "SwiftData" not in app_model and "ModelContainer" not in app_model, "transcript persistence framework appears in AppModel")
@@ -311,6 +315,25 @@ def crash_report_names() -> set[str]:
     if not reports.is_dir():
         return set()
     return {path.name for path in reports.glob("Billie Flow-*.ips")}
+
+
+def on_screen_window_count(pid: int) -> int:
+    source = f"""
+import CoreGraphics
+let options: CGWindowListOption = [.optionOnScreenOnly, .excludeDesktopElements]
+let windows = CGWindowListCopyWindowInfo(options, kCGNullWindowID)! as! [[String: Any]]
+let count = windows.filter {{ window in
+    (window[kCGWindowOwnerPID as String] as? Int) == {pid}
+        && (window[kCGWindowLayer as String] as? Int) == 0
+}}.count
+print(count)
+"""
+    completed = run_command(["/usr/bin/swift", "-e", source], timeout=60)
+    require(completed.returncode == 0, "on-screen window probe failed")
+    try:
+        return int(completed.stdout.strip())
+    except ValueError as exc:
+        raise CheckFailure("on-screen window probe returned malformed output") from exc
 
 
 def isolated_app_launch(seconds: float) -> str:
@@ -359,6 +382,10 @@ def isolated_app_launch(seconds: float) -> str:
                 if not pid_alive(app_pid):
                     raise CheckFailure("isolated Release app terminated during launch smoke")
                 time.sleep(0.1)
+            require(
+                on_screen_window_count(app_pid) >= 1,
+                "first-launch Settings window did not appear when setup was missing",
+            )
         finally:
             if pid_alive(app_pid):
                 os.kill(app_pid, signal.SIGTERM)
@@ -380,7 +407,7 @@ def isolated_app_launch(seconds: float) -> str:
     time.sleep(1)
     require(crash_report_names() == crashes_before, "isolated app produced a system crash report")
     require(application_pids(installed_executable) == installed_before, "installed app process state changed")
-    return f"LaunchServices-opened packaged app remained live for {seconds:.1f}s and exited without process/audio/crash residue; installed app was not addressed"
+    return f"LaunchServices-opened packaged app showed first-launch Settings, remained live for {seconds:.1f}s, and exited without process/audio/crash residue; installed app was not addressed"
 
 
 def write_test_wav(path: Path, seconds: float = 0.75) -> None:

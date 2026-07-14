@@ -55,7 +55,7 @@ def test_cleanup_accepts_only_generation_that_reaches_end_marker(monkeypatch):
     )
 
     assert loaded_runtime().cleanup("original words", "light-cleanup") == "Complete text."
-    assert captured == {"verbose": False, "max_tokens": 256}
+    assert captured == {"max_tokens": 256}
 
 
 def test_cleanup_raises_instead_of_returning_length_truncated_text(monkeypatch):

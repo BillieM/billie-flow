@@ -103,6 +103,8 @@ def main() -> int:
         payload = processed["payload"]
         if not payload["final_text"].strip():
             raise RuntimeError("process returned empty final text")
+        if payload["warning"] is not None:
+            raise RuntimeError(f"process returned warning {payload['warning']}")
 
         _, shutdown = exchange(child, command("shutdown", {}))
         if shutdown["event"] != "result" or shutdown["payload"].get("kind") != "shutdown":

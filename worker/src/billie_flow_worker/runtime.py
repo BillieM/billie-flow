@@ -110,7 +110,6 @@ class MLXRuntime:
                 self._cleanup_model_object,
                 self._cleanup_tokenizer,
                 prompt,
-                verbose=False,
                 max_tokens=max_tokens,
             )
             output_parts: list[str] = []

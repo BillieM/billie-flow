@@ -5,6 +5,17 @@ import Testing
 
 @Suite("Persistent worker process")
 struct WorkerProcessTests {
+    @Test func installerProcessRunnerHandlesAnImmediateExit() async throws {
+        let runner = ProcessWorkerRuntimeInstallRunner()
+        let command = WorkerRuntimeInstallCommand(
+            executableURL: URL(fileURLWithPath: "/usr/bin/true"),
+            arguments: [],
+            environment: [:]
+        )
+
+        #expect(try await runner.run(command) == 0)
+    }
+
     @Test func fakeWorkerHelloWarmupProcessShutdown() async throws {
         #if SWIFT_PACKAGE
         let bundle = Bundle.module

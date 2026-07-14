@@ -215,3 +215,33 @@ Reasoning:
   more here than product infrastructure.
 - Developer ID signing and notarisation can be added later without changing the
   local app architecture.
+
+## 2026-07-13: Prove the First-Launch Window, Not Just the Process
+
+Decision: use SwiftUI's `openSettings` environment action from the rendered
+menu-bar label to present setup on first launch. The release gate must verify
+that the isolated app owns an on-screen window when its runtime is missing.
+
+Reasoning: the first public v0.2.0 build launched and remained healthy, but a
+real replacement install showed that its selector-based Settings request did
+not surface a window. Process, signature, and source checks were all green, so
+the gap only became visible when the packaged app was exercised as a user would
+exercise it. v0.2.1 replaces that path and turns the observed failure into an
+automated release assertion.
+
+## 2026-07-13: Treat Cleanup Fallback as a Failed Production Acceptance
+
+Decision: keep raw-ASR fallback in the app, but fail the production worker
+acceptance whenever that fallback is used.
+
+Reasoning: the real installed-app test exposed that the pinned `mlx-lm` version
+forwarded an obsolete `verbose` argument to `generate_step`, so every cleanup
+attempt fell back to raw ASR even though the release gate returned success. The
+incompatible argument is removed, its unit expectation is pinned, and the
+production acceptance now requires a warning-free cleaned result.
+
+The same reinstall also exposed an immediate-exit race in the setup process
+runner: the final Python verification had already exited while the app still
+waited at “Verifying setup.” Process completion now uses a termination handler
+registered before launch, with a real `/usr/bin/true` regression test covering
+the fast-exit path.

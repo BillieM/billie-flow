@@ -165,18 +165,25 @@ public actor ProcessWorkerRuntimeInstallRunner: WorkerRuntimeInstallProcessRunni
         }
         child.standardOutput = FileHandle.nullDevice
         child.standardError = FileHandle.nullDevice
-        try child.run()
         process = child
         defer { process = nil }
 
-        let status = await withTaskCancellationHandler {
-            await Task.detached(priority: .utility) {
-                child.waitUntilExit()
-                return child.terminationStatus
-            }.value
+        let status = try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                child.terminationHandler = { terminated in
+                    continuation.resume(returning: terminated.terminationStatus)
+                }
+                do {
+                    try child.run()
+                } catch {
+                    child.terminationHandler = nil
+                    continuation.resume(throwing: error)
+                }
+            }
         } onCancel: {
             if child.isRunning { child.terminate() }
         }
+        child.terminationHandler = nil
         if Task.isCancelled { throw CancellationError() }
         return status
     }
