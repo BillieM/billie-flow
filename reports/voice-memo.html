@@ -4,7 +4,29 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <title>Voice Memo ASR Bake-off</title>
+  <meta name="author" content="Billie">
+  <meta name="billiem-shared" content="0.8.0">
+  <meta name="theme-color" content="#f7f7f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f0f11" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="The Billie Flow model analysis that replaced an expected Gemma 12B path with a faster Whisper and Qwen local pipeline.">
+  <link rel="canonical" href="https://billiem.uk/reports/billie-flow-model-analysis/">
+  <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
+  <meta property="og:site_name" content="billiem">
+  <meta property="og:title" content="The Billie Flow local model analysis">
+  <meta property="og:description" content="The Billie Flow model analysis that replaced an expected Gemma 12B path with a faster Whisper and Qwen local pipeline.">
+  <meta property="og:url" content="https://billiem.uk/reports/billie-flow-model-analysis/">
+  <meta property="og:image" content="https://billiem.uk/static/brand/social-default-v3.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="billiem — personal projects and writing.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Billie Flow local model analysis">
+  <meta name="twitter:description" content="The Billie Flow model analysis that replaced an expected Gemma 12B path with a faster Whisper and Qwen local pipeline.">
+  <meta name="twitter:image" content="https://billiem.uk/static/brand/social-default-v3.png">
+  <meta name="twitter:image:alt" content="billiem — personal projects and writing.">
+  <title>The Billie Flow local model analysis | billiem</title>
   <style>
 :root {
   color-scheme: light dark;
@@ -14,10 +36,15 @@
   --line: #d8d8d2;
   --panel: #ffffff;
   --accent: #7c6bd9;
+  --link: #6d5acb;
+  --focus-ring: #5946bd;
+  --focus-width: 3px;
+  --focus-offset: 3px;
   --accent-soft: #ece8ff;
   --mark: #eeebff;
   --code: #eeeeea;
   --measure: 70ch;
+  --motion-fast: 0.16s;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,6 +55,8 @@
     --line: #303034;
     --panel: #17171a;
     --accent: #c0b4ff;
+    --link: #c0b4ff;
+    --focus-ring: #c0b4ff;
     --accent-soft: #242033;
     --mark: #262238;
     --code: #1c1c20;
@@ -53,13 +82,34 @@ body {
 
 a {
   color: inherit;
-  text-decoration-color: var(--accent);
+  text-decoration-color: var(--link);
   text-decoration-thickness: 0.08em;
   text-underline-offset: 0.18em;
 }
 
 a:hover {
-  color: var(--accent);
+  color: var(--link);
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 1000;
+  inset: 0.5rem auto auto 0.5rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--ink);
+  color: var(--bg);
+  text-decoration: none;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus-visible {
+  color: var(--bg);
+  transform: translateY(0);
 }
 
 .site-header,
@@ -78,40 +128,216 @@ a:hover {
 }
 
 .wordmark {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  color: var(--ink);
   font-size: 1.12rem;
   font-weight: 780;
   letter-spacing: 0;
   text-decoration: none;
 }
 
-.wordmark::after {
-  content: none;
+.site-mark {
+  flex: 0 0 auto;
+  width: 1.35rem;
+  height: 1.35rem;
+  overflow: visible;
 }
 
-.site-header nav {
+.site-mark-tentacle {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+}
+
+.wordmark:hover .site-mark-tentacle-left-outer,
+.wordmark:focus-visible .site-mark-tentacle-left-outer {
+  animation: octopus-wiggle-left 540ms ease-in-out 1;
+}
+
+.wordmark:hover .site-mark-tentacle-left-inner,
+.wordmark:focus-visible .site-mark-tentacle-left-inner {
+  animation: octopus-wiggle-right 470ms 35ms ease-in-out 1;
+}
+
+.wordmark:hover .site-mark-tentacle-right-inner,
+.wordmark:focus-visible .site-mark-tentacle-right-inner {
+  animation: octopus-wiggle-left 500ms 20ms ease-in-out 1;
+}
+
+.wordmark:hover .site-mark-tentacle-right-outer,
+.wordmark:focus-visible .site-mark-tentacle-right-outer {
+  animation: octopus-wiggle-right 560ms ease-in-out 1;
+}
+
+@keyframes octopus-wiggle-left {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+
+  34% {
+    transform: rotate(-8deg) translateY(0.6px);
+  }
+
+  68% {
+    transform: rotate(5deg) translateY(0);
+  }
+}
+
+@keyframes octopus-wiggle-right {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+
+  34% {
+    transform: rotate(8deg) translateY(0.6px);
+  }
+
+  68% {
+    transform: rotate(-5deg) translateY(0);
+  }
+}
+
+.site-nav--desktop {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
   gap: 0.7rem 1rem;
 }
 
-.site-header nav a {
+.site-menu {
+  display: none;
+}
+
+.site-nav a {
   color: var(--muted);
   text-decoration: none;
-  transition: color 0.16s ease, text-decoration-color 0.16s ease;
+  transition: color var(--motion-fast) ease, text-decoration-color var(--motion-fast) ease;
 }
 
-.site-header nav a:hover,
-.site-header nav a:focus-visible {
-  color: var(--accent);
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  color: var(--link);
   text-decoration: underline;
-  text-decoration-color: var(--accent);
+  text-decoration-color: var(--link);
 }
 
-@media (max-width: 42rem) {
+@media (max-width: 50rem) {
   .site-header {
-    align-items: flex-start;
+    position: relative;
+    display: block;
     padding-bottom: 1.8rem;
+  }
+
+  .site-menu {
+    display: block;
+    margin: 0;
+  }
+
+  .site-nav--desktop {
+    display: none;
+  }
+
+  .site-menu summary {
+    position: absolute;
+    top: 0.7rem;
+    right: 0;
+    display: inline-flex;
+    width: 2.75rem;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .site-menu summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .site-menu summary:hover,
+  .site-menu summary:focus-visible,
+  .site-menu[open] summary {
+    color: var(--link);
+  }
+
+  .site-menu-icon {
+    width: 1.4rem;
+    height: 1.4rem;
+    transition: transform 170ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .site-menu-line {
+    transform-box: view-box;
+    transform-origin: center;
+    transition: transform 170ms cubic-bezier(0.2, 0.7, 0.2, 1), opacity 120ms ease;
+  }
+
+  .site-menu[open] .site-menu-icon {
+    transform: rotate(90deg);
+  }
+
+  .site-menu[open] .site-menu-line--top {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .site-menu[open] .site-menu-line--middle {
+    opacity: 0;
+  }
+
+  .site-menu[open] .site-menu-line--bottom {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .site-menu-panel {
+    display: grid;
+    grid-template-rows: 1fr;
+  }
+
+  .site-menu[open] .site-menu-panel {
+    animation: site-menu-open 180ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .site-menu-panel-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .site-menu nav {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-top: 1rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .site-menu nav a {
+    min-height: 2.75rem;
+    padding: 0.55rem 0;
+    font-size: 1rem;
+  }
+
+  @keyframes site-menu-open {
+    from {
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transform: translateY(-0.25rem);
+    }
+
+    to {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
@@ -135,9 +361,9 @@ h1, h2, h3 {
   letter-spacing: 0;
 }
 h1 {
-  max-width: 13ch;
+  max-width: 17ch;
   margin: 0;
-  font-size: clamp(2.4rem, 9vw, 6.6rem);
+  font-size: clamp(2.4rem, 7vw, 5.2rem);
 }
 h2 {
   margin: 0;
@@ -152,7 +378,7 @@ p {
 }
 .report-intro {
   max-width: 56rem;
-  padding-block: 1rem 2rem;
+  padding-block: 0.5rem 1.5rem;
   border-bottom: 1px solid var(--line);
 }
 .eyebrow,
@@ -168,9 +394,57 @@ small {
   letter-spacing: 0.12em;
 }
 .lede {
-  max-width: 48rem;
+  max-width: 50rem;
   color: var(--muted);
   font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+}
+.result-comparison {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: stretch;
+  margin-top: 1.5rem;
+}
+.result-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.25rem 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 82%, var(--bg));
+}
+.result-card span,
+.result-card p {
+  grid-column: 1 / -1;
+}
+.result-card span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 760;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.result-card strong,
+.result-card b {
+  font-size: 1.08rem;
+}
+.result-card b {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.result-card p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+}
+.result-selected {
+  border-color: color-mix(in srgb, var(--accent) 65%, var(--line));
+  background: var(--accent-soft);
+}
+.result-arrow {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 1.4rem;
 }
 .summary-strip,
 .decision-grid {
@@ -204,6 +478,22 @@ dd small {
   margin-top: 0.2rem;
   font-weight: 400;
 }
+.report-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  padding-top: 1rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+.report-nav a {
+  text-decoration: none;
+}
+.report-nav a:hover,
+.report-nav a:focus-visible {
+  color: var(--link, var(--accent));
+  text-decoration: underline;
+}
 .evidence-section {
   padding-block: 2rem;
   border-bottom: 1px solid var(--line);
@@ -218,24 +508,25 @@ dd small {
 .section-head p {
   margin: 0;
 }
-.pipeline-spine {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-.pipeline-spine span,
-.branch-node,
+.branch-row,
 .recommendation,
 .cleanup-example,
 .model-evidence {
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--panel) 82%, var(--bg));
 }
-.pipeline-spine span {
-  padding: 0.55rem 0.65rem;
+.pipeline-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.6rem;
+  margin: 0 0 0.85rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line);
   color: var(--muted);
   font-size: 0.82rem;
+}
+.pipeline-line b {
+  color: var(--accent);
 }
 .branch-list,
 .model-list,
@@ -244,15 +535,35 @@ dd small {
   display: grid;
   gap: 0.7rem;
 }
+.branch-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 .branch-row {
+  min-width: 0;
+  padding: 1rem;
+}
+.branch-default {
+  grid-column: 1 / -1;
+  border-color: color-mix(in srgb, var(--accent) 65%, var(--line));
+  background: var(--accent-soft);
+}
+.branch-row header {
   display: grid;
-  grid-template-columns: 5.2rem repeat(3, minmax(0, 1fr)) minmax(12rem, 1.35fr);
-  gap: 0.5rem;
-  align-items: stretch;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.7rem;
+  align-items: center;
+}
+.branch-row header h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.branch-row header > strong {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
 .branch-role {
-  display: grid;
-  place-items: center;
+  display: inline-block;
+  padding: 0.18rem 0.45rem;
   border: 1px solid var(--line);
   color: var(--muted);
   font-size: 0.78rem;
@@ -260,17 +571,17 @@ dd small {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-.branch-default .branch-role,
-.branch-default .branch-node {
-  border-color: color-mix(in srgb, var(--accent) 65%, var(--line));
-  background: var(--accent-soft);
+.branch-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0.8rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
 }
-.branch-node,
-.branch-verdict {
-  min-width: 0;
-  padding: 0.7rem;
+.branch-facts dd {
+  font-size: 0.9rem;
 }
-.branch-node span,
 .cleanup-meta span,
 .recommendation span {
   display: block;
@@ -279,19 +590,15 @@ dd small {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-.branch-node strong,
 .cleanup-meta strong {
   display: block;
   overflow-wrap: anywhere;
 }
-.branch-node small {
-  display: block;
-  margin-top: 0.2rem;
-}
 .branch-verdict {
+  margin: 0.8rem 0 0;
+  padding-top: 0.75rem;
   color: var(--muted);
   border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
 }
 .decision-grid {
   margin-bottom: 1rem;
@@ -300,7 +607,7 @@ dd small {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .recommendation,
-.cleanup-example {
+.cleanup-body {
   padding: 1rem;
 }
 .recommendation strong {
@@ -314,6 +621,17 @@ dd small {
 }
 .model-evidence {
   overflow: hidden;
+}
+.cleanup-example {
+  overflow: hidden;
+}
+.cleanup-meta {
+  display: block;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+}
+.cleanup-body {
+  border-top: 1px solid var(--line);
 }
 .model-evidence summary {
   display: flex;
@@ -443,14 +761,24 @@ footer {
   font-size: 0.86rem;
 }
 @media (max-width: 52rem) {
+  .result-comparison,
   .summary-strip,
   .decision-grid,
-  .pipeline-spine,
-  .branch-row,
+  .branch-list,
   .recommendation-grid,
   .evidence-grid,
   .method-grid {
     grid-template-columns: 1fr;
+  }
+  .result-arrow {
+    transform: rotate(90deg);
+  }
+  .branch-default {
+    grid-column: auto;
+  }
+  .branch-facts {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
   }
   .summary-strip div,
   .decision-grid div {
@@ -482,135 +810,84 @@ footer {
   </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 <header class="site-header" data-billiem-chrome="site-header">
-  <a class="wordmark" href="https://billiem.uk/" aria-label="billiem home">billiem</a>
-  <nav aria-label="Site">
+  <a class="wordmark" href="https://billiem.uk/" aria-label="billiem home">
+    <svg class="site-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <path d="M32 7c-13 0-21 9-21 22v10h42V29C53 16 45 7 32 7Z" fill="currentColor"/>
+      <path class="site-mark-tentacle site-mark-tentacle-left-outer" d="M15 35c0 11-5 15-10 17" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+      <path class="site-mark-tentacle site-mark-tentacle-left-inner" d="M25 36c0 12-2 17-8 21" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+      <path class="site-mark-tentacle site-mark-tentacle-right-inner" d="M39 36c0 12 2 17 8 21" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+      <path class="site-mark-tentacle site-mark-tentacle-right-outer" d="M49 35c0 11 5 15 10 17" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="25" cy="25" r="2.4" fill="var(--bg)"/>
+      <circle cx="39" cy="25" r="2.4" fill="var(--bg)"/>
+      <path d="M24 30c4 6 12 6 16 0" fill="none" stroke="var(--bg)" stroke-width="3.6" stroke-linecap="round"/>
+    </svg>
+    <span>billiem</span>
+  </a>
+  <nav class="site-nav site-nav--desktop" aria-label="Site">
+    <a href="https://billiem.uk/explore/">Explore</a>
+    <a href="https://billiem.uk/contact/">Contact</a>
     <a href="https://billiem.uk/feed.xml">RSS</a>
     <a href="https://billiem.uk/graph/">Graph</a>
     <a href="https://github.com/billiem" rel="me noopener noreferrer">GitHub</a>
   </nav>
+  <details class="site-menu">
+    <summary aria-label="Menu">
+      <svg class="site-menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path class="site-menu-line site-menu-line--top" d="M4 6h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path class="site-menu-line site-menu-line--middle" d="M4 12h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path class="site-menu-line site-menu-line--bottom" d="M4 18h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </summary>
+    <div class="site-menu-panel">
+      <div class="site-menu-panel-inner">
+        <nav class="site-nav site-nav--mobile" aria-label="Site">
+          <a href="https://billiem.uk/explore/">Explore</a>
+          <a href="https://billiem.uk/contact/">Contact</a>
+          <a href="https://billiem.uk/feed.xml">RSS</a>
+          <a href="https://billiem.uk/graph/">Graph</a>
+          <a href="https://github.com/billiem" rel="me noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </div>
+  </details>
 </header>
-  <main>
+  <main id="main-content">
 
     <section class="intro report-intro" aria-labelledby="report-title">
-      <p class="eyebrow">Billie Flow Lab</p>
-      <h1 id="report-title">Voice Memo ASR Bake-off</h1>
-      <p class="lede">Use MLX Whisper large-v3-turbo for the first app default, pair it with small local light cleanup, and keep vocabulary correction deterministic.</p>
+      <p class="eyebrow">Billie Flow model analysis</p>
+      <h1 id="report-title">The 12B audio model wasn’t the answer</h1>
+      <p class="lede">I started with Gemma 12B because native audio sounded like the obvious route. On this memo it took 258.79s and drifted. MLX Whisper plus a small Qwen cleanup pass finished in about 4.30s and gave the better app default.</p>
+      <div class="result-comparison" aria-label="Expected model compared with selected pipeline">
+        <article class="result-card result-expected">
+          <span>Expected</span>
+          <strong>Gemma 4 12B Audio</strong>
+          <b>258.79s</b>
+          <p>One native-audio path, but far slower and affected by chunk-overlap drift.</p>
+        </article>
+        <div class="result-arrow" aria-hidden="true">→</div>
+        <article class="result-card result-selected">
+          <span>Selected</span>
+          <strong>Whisper + Qwen 1.5B</strong>
+          <b>4.30s</b>
+          <p>Separate recognition and cleanup, roughly 60× faster here and easier to inspect.</p>
+        </article>
+      </div>
       <dl class="summary-strip">
         <div><dt>Clip</dt><dd>35.32s</dd></div>
-        <div><dt>ASR default</dt><dd>MLX Whisper large-v3-turbo</dd></div>
-        <div><dt>Cleanup</dt><dd>MLX local small text</dd></div>
+        <div><dt>Recognition</dt><dd>MLX Whisper large-v3-turbo</dd></div>
+        <div><dt>Cleanup</dt><dd>Qwen2.5 1.5B<small>MLX local small text</small></dd></div>
         <div><dt>Evidence</dt><dd>5 ASR branches, 70 cleanup runs</dd></div>
       </dl>
-    </section>
-
-
-    <section class="evidence-section" id="diagram">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">branch map</p>
-          <h2>One memo, five routes through the pipeline</h2>
-        </div>
-        <p class="small">The page stays diagram-first; transcripts sit behind the model rows.</p>
-      </div>
-      <div class="pipeline-spine" aria-label="Pipeline">
-        <span>Voice memo</span>
-        <span>16 kHz mono</span>
-        <span>ASR branch</span>
-        <span>Cleanup</span>
-        <span>Vocabulary repair</span>
-      </div>
-      <div class="branch-list">
-            <article class="branch-row branch-default">
-              <div class="branch-role">default</div>
-              <div class="branch-node">
-                <span>chunking</span>
-                <strong>whole-file</strong>
-              </div>
-              <div class="branch-node">
-                <span>ASR</span>
-                <strong>MLX Whisper large-v3-turbo</strong>
-                <small>ran / 3.68s</small>
-              </div>
-              <div class="branch-node">
-                <span>vocabulary</span>
-                <strong>2 correct / 2 missed</strong>
-              </div>
-              <div class="branch-verdict">Best default ASR result. It is fast, coherent, and hears LLM, but still needs vocabulary correction for Wispr Flow and Billie Flow.</div>
-            </article>
-
-            <article class="branch-row branch-smoke">
-              <div class="branch-role">smoke</div>
-              <div class="branch-node">
-                <span>chunking</span>
-                <strong>whole-file</strong>
-              </div>
-              <div class="branch-node">
-                <span>ASR</span>
-                <strong>MLX Whisper tiny</strong>
-                <small>ran / 2.00s</small>
-              </div>
-              <div class="branch-node">
-                <span>vocabulary</span>
-                <strong>1 correct / 3 missed</strong>
-              </div>
-              <div class="branch-verdict">Good smoke test, not good enough for quality. It keeps the shape, but loses exactly the project vocabulary this app cares about.</div>
-            </article>
-
-            <article class="branch-row branch-lab">
-              <div class="branch-role">lab</div>
-              <div class="branch-node">
-                <span>chunking</span>
-                <strong>fixed-25s-overlap-2s</strong>
-              </div>
-              <div class="branch-node">
-                <span>ASR</span>
-                <strong>Gemma 4 12B Audio</strong>
-                <small>ran / 258.79s</small>
-              </div>
-              <div class="branch-node">
-                <span>vocabulary</span>
-                <strong>2 correct / 2 missed</strong>
-              </div>
-              <div class="branch-verdict">Completed, but not default-worthy. The public audio-capable Gemma 4 12B checkpoint ran, but chunk overlap introduced text drift and the path is far slower than Whisper.</div>
-            </article>
-
-            <article class="branch-row branch-lab">
-              <div class="branch-role">lab</div>
-              <div class="branch-node">
-                <span>chunking</span>
-                <strong>long-form</strong>
-              </div>
-              <div class="branch-node">
-                <span>ASR</span>
-                <strong>Voxtral Mini 3B</strong>
-                <small>ran / 110.85s</small>
-              </div>
-              <div class="branch-node">
-                <span>vocabulary</span>
-                <strong>2 correct / 2 missed</strong>
-              </div>
-              <div class="branch-verdict">High-readability lab candidate. It produces a clean transcript and gets LLM/MacBook, but the runtime is high and it collapses the project names.</div>
-            </article>
-
-            <article class="branch-row branch-lab">
-              <div class="branch-role">lab</div>
-              <div class="branch-node">
-                <span>chunking</span>
-                <strong>whole-file</strong>
-              </div>
-              <div class="branch-node">
-                <span>ASR</span>
-                <strong>Parakeet TDT 0.6B v3</strong>
-                <small>ran / 42.81s</small>
-              </div>
-              <div class="branch-node">
-                <span>vocabulary</span>
-                <strong>2 correct / 2 missed</strong>
-              </div>
-              <div class="branch-verdict">Strong lab candidate. It preserves filler and timing detail better than Whisper, but is much slower and still misses the product names.</div>
-            </article>
-            </div>
+      <nav class="report-nav" aria-label="Report sections">
+        <a href="#defaults">Decision</a>
+        <a href="#diagram">Model branches</a>
+        <a href="#asr-evidence">Transcripts</a>
+        <a href="#cleanup">Cleanup</a>
+        <a href="#vocabulary">Vocabulary</a>
+        <a href="#method">Method</a>
+      </nav>
     </section>
 
 
@@ -622,10 +899,10 @@ footer {
         </div>
       </div>
       <dl class="decision-grid">
-        <div><dt>ASR</dt><dd>mlx-whisper-large-v3-turbo</dd></div>
-        <div><dt>Cleanup model</dt><dd>mlx-local-small-text</dd></div>
-        <div><dt>Style</dt><dd>light-cleanup</dd></div>
-        <div><dt>Fallback</dt><dd>mlx-whisper-tiny<small>Tiny is a runner/smoke fallback only, not a quality fallback.</small></dd></div>
+        <div><dt>Recognition</dt><dd>MLX Whisper large-v3-turbo</dd></div>
+        <div><dt>Cleanup model</dt><dd>Qwen2.5 1.5B<small>MLX local small text</small></dd></div>
+        <div><dt>Style</dt><dd>Light cleanup</dd></div>
+        <div><dt>Smoke fallback</dt><dd>MLX Whisper tiny<small>Tiny is a runner/smoke fallback only, not a quality fallback.</small></dd></div>
       </dl>
       <div class="recommendation-grid">
         <article class="recommendation rec-pick">
@@ -652,6 +929,89 @@ footer {
           <p>They now run locally where public access allows, but they are slower and still miss the key vocabulary. Gemma also depends on the public google/gemma-4-12b-it checkpoint because the originally named google/gemma-4-12b-audio id does not exist.</p>
         </article>
         </div>
+    </section>
+
+
+    <section class="evidence-section" id="diagram">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">branch map</p>
+          <h2>One memo, five routes through the pipeline</h2>
+        </div>
+        <p class="small">The page stays diagram-first; transcripts sit behind the model rows.</p>
+      </div>
+      <p class="pipeline-line"><span>Voice memo</span><b>→</b><span>16 kHz mono</span><b>→</b><span>ASR branch</span><b>→</b><span>Qwen cleanup</span><b>→</b><span>Vocabulary repair</span></p>
+      <div class="branch-list">
+            <article class="branch-row branch-default">
+              <header>
+                <span class="branch-role">default</span>
+                <h3>MLX Whisper large-v3-turbo</h3>
+                <strong>3.68s</strong>
+              </header>
+              <dl class="branch-facts">
+                <div><dt>Chunking</dt><dd>whole-file</dd></div>
+                <div><dt>Vocabulary</dt><dd>2 correct / 2 missed</dd></div>
+                <div><dt>Status</dt><dd>ran</dd></div>
+              </dl>
+              <p class="branch-verdict">Best default ASR result. It is fast, coherent, and hears LLM, but still needs vocabulary correction for Wispr Flow and Billie Flow.</p>
+            </article>
+
+            <article class="branch-row branch-smoke">
+              <header>
+                <span class="branch-role">smoke</span>
+                <h3>MLX Whisper tiny</h3>
+                <strong>2.00s</strong>
+              </header>
+              <dl class="branch-facts">
+                <div><dt>Chunking</dt><dd>whole-file</dd></div>
+                <div><dt>Vocabulary</dt><dd>1 correct / 3 missed</dd></div>
+                <div><dt>Status</dt><dd>ran</dd></div>
+              </dl>
+              <p class="branch-verdict">Good smoke test, not good enough for quality. It keeps the shape, but loses exactly the project vocabulary this app cares about.</p>
+            </article>
+
+            <article class="branch-row branch-lab">
+              <header>
+                <span class="branch-role">lab</span>
+                <h3>Gemma 4 12B Audio</h3>
+                <strong>258.79s</strong>
+              </header>
+              <dl class="branch-facts">
+                <div><dt>Chunking</dt><dd>fixed-25s-overlap-2s</dd></div>
+                <div><dt>Vocabulary</dt><dd>2 correct / 2 missed</dd></div>
+                <div><dt>Status</dt><dd>ran</dd></div>
+              </dl>
+              <p class="branch-verdict">Completed, but not default-worthy. The public audio-capable Gemma 4 12B checkpoint ran, but chunk overlap introduced text drift and the path is far slower than Whisper.</p>
+            </article>
+
+            <article class="branch-row branch-lab">
+              <header>
+                <span class="branch-role">lab</span>
+                <h3>Voxtral Mini 3B</h3>
+                <strong>110.85s</strong>
+              </header>
+              <dl class="branch-facts">
+                <div><dt>Chunking</dt><dd>long-form</dd></div>
+                <div><dt>Vocabulary</dt><dd>2 correct / 2 missed</dd></div>
+                <div><dt>Status</dt><dd>ran</dd></div>
+              </dl>
+              <p class="branch-verdict">High-readability lab candidate. It produces a clean transcript and gets LLM/MacBook, but the runtime is high and it collapses the project names.</p>
+            </article>
+
+            <article class="branch-row branch-lab">
+              <header>
+                <span class="branch-role">lab</span>
+                <h3>Parakeet TDT 0.6B v3</h3>
+                <strong>42.81s</strong>
+              </header>
+              <dl class="branch-facts">
+                <div><dt>Chunking</dt><dd>whole-file</dd></div>
+                <div><dt>Vocabulary</dt><dd>2 correct / 2 missed</dd></div>
+                <div><dt>Status</dt><dd>ran</dd></div>
+              </dl>
+              <p class="branch-verdict">Strong lab candidate. It preserves filler and timing detail better than Whisper, but is much slower and still misses the product names.</p>
+            </article>
+            </div>
     </section>
 
 
@@ -784,83 +1144,93 @@ footer {
         </div>
       </div>
       <div class="cleanup-list">
-            <article class="cleanup-example">
-              <div class="cleanup-meta">
+            <details class="cleanup-example">
+              <summary class="cleanup-meta">
                 <span>MLX Whisper large-v3-turbo</span>
                 <strong>Light cleanup / MLX local small text</strong>
+              </summary>
+              <div class="cleanup-body">
+                <p>Best default-style candidate; keeps the important vocabulary visible.</p>
+                <div class="score-line">
+                  <span>fidelity <span class="meter"><span class="meter-track"><span style="width:100%"></span></span><span>5/5</span></span></span>
+                  <span>voice <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>4/5</span></span></span>
+                  <span>invention <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>1/5</span></span></span>
+                </div>
+                <div class="sample-text">Okay, so I&#x27;m just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It&#x27;s similar to Wispr Flow, but not quite Wispr Flow. We&#x27;ll call it Billie Flow. The premise is that it runs using a local LLM on my MacBook.</div>
+                <p class="correction-line">Whisperflow -&gt; Wispr Flow (2), Billy Flow -&gt; Billie Flow (1)</p>
               </div>
-              <p>Best default-style candidate; keeps the important vocabulary visible.</p>
-              <div class="score-line">
-                <span>fidelity <span class="meter"><span class="meter-track"><span style="width:100%"></span></span><span>5/5</span></span></span>
-                <span>voice <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>4/5</span></span></span>
-                <span>invention <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>1/5</span></span></span>
-              </div>
-              <div class="sample-text">Okay, so I&#x27;m just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It&#x27;s similar to Wispr Flow, but not quite Wispr Flow. We&#x27;ll call it Billie Flow. The premise is that it runs using a local LLM on my MacBook.</div>
-              <p class="correction-line">Whisperflow -&gt; Wispr Flow (2), Billy Flow -&gt; Billie Flow (1)</p>
-            </article>
+            </details>
 
-            <article class="cleanup-example">
-              <div class="cleanup-meta">
+            <details class="cleanup-example">
+              <summary class="cleanup-meta">
                 <span>MLX Whisper large-v3-turbo</span>
                 <strong>Verbatim, context-corrected / MLX local small text</strong>
+              </summary>
+              <div class="cleanup-body">
+                <p>Best audit-style candidate; keeps the important vocabulary visible.</p>
+                <div class="score-line">
+                  <span>fidelity <span class="meter"><span class="meter-track"><span style="width:100%"></span></span><span>5/5</span></span></span>
+                  <span>voice <span class="meter"><span class="meter-track"><span style="width:100%"></span></span><span>5/5</span></span></span>
+                  <span>invention <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>1/5</span></span></span>
+                </div>
+                <div class="sample-text">Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It would be similar to Wispr Flow, but not quite Wispr Flow because we would call it Billie Flow. The whole premise is that it would run using a local LLM on my MacBook.</div>
+                <p class="correction-line">Whisperflow -&gt; Wispr Flow (2), Billy Flow -&gt; Billie Flow (1)</p>
               </div>
-              <p>Best audit-style candidate; keeps the important vocabulary visible.</p>
-              <div class="score-line">
-                <span>fidelity <span class="meter"><span class="meter-track"><span style="width:100%"></span></span><span>5/5</span></span></span>
-                <span>voice <span class="meter"><span class="meter-track"><span style="width:100%"></span></span><span>5/5</span></span></span>
-                <span>invention <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>1/5</span></span></span>
-              </div>
-              <div class="sample-text">Okay, so I am just going to ramble for a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It would be similar to Wispr Flow, but not quite Wispr Flow because we would call it Billie Flow. The whole premise is that it would run using a local LLM on my MacBook.</div>
-              <p class="correction-line">Whisperflow -&gt; Wispr Flow (2), Billy Flow -&gt; Billie Flow (1)</p>
-            </article>
+            </details>
 
-            <article class="cleanup-example">
-              <div class="cleanup-meta">
+            <details class="cleanup-example">
+              <summary class="cleanup-meta">
                 <span>MLX Whisper large-v3-turbo</span>
                 <strong>Notes / MLX local small text</strong>
-              </div>
-              <p>Useful for scanning, less useful for fidelity review; keeps the important vocabulary visible.</p>
-              <div class="score-line">
-                <span>fidelity <span class="meter"><span class="meter-track"><span style="width:100%"></span></span><span>5/5</span></span></span>
-                <span>voice <span class="meter"><span class="meter-track"><span style="width:60%"></span></span><span>3/5</span></span></span>
-                <span>invention <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>1/5</span></span></span>
-              </div>
-              <div class="sample-text">- Start rambling for a bit to assess voice memo quality
+              </summary>
+              <div class="cleanup-body">
+                <p>Useful for scanning, less useful for fidelity review; keeps the important vocabulary visible.</p>
+                <div class="score-line">
+                  <span>fidelity <span class="meter"><span class="meter-track"><span style="width:100%"></span></span><span>5/5</span></span></span>
+                  <span>voice <span class="meter"><span class="meter-track"><span style="width:60%"></span></span><span>3/5</span></span></span>
+                  <span>invention <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>1/5</span></span></span>
+                </div>
+                <div class="sample-text">- Start rambling for a bit to assess voice memo quality
 - Goal: Build a local voice clone
 - Project name: Billie Flow
 - Premise: Local LLM on MacBook</div>
-              <p class="correction-line">Billy Flow -&gt; Billie Flow (1)</p>
-            </article>
+                <p class="correction-line">Billy Flow -&gt; Billie Flow (1)</p>
+              </div>
+            </details>
 
-            <article class="cleanup-example">
-              <div class="cleanup-meta">
+            <details class="cleanup-example">
+              <summary class="cleanup-meta">
                 <span>MLX Whisper tiny</span>
                 <strong>Light cleanup / MLX local small text</strong>
+              </summary>
+              <div class="cleanup-body">
+                <p>Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.</p>
+                <div class="score-line">
+                  <span>fidelity <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>4/5</span></span></span>
+                  <span>voice <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>4/5</span></span></span>
+                  <span>invention <span class="meter"><span class="meter-track"><span style="width:60%"></span></span><span>2/5</span></span></span>
+                </div>
+                <div class="sample-text">Okay, so I&#x27;m just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It would be similar to Wispr Flow but not quite with Billie Flow. The whole premise is to run it on my MacBook using LLM.</div>
+                <p class="correction-line">Whisper Flow -&gt; Wispr Flow (1), Billy Flow -&gt; Billie Flow (1), Macbook -&gt; MacBook (1)</p>
               </div>
-              <p>Useful style-specific transform; source ASR errors still leak through; keeps the important vocabulary visible.</p>
-              <div class="score-line">
-                <span>fidelity <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>4/5</span></span></span>
-                <span>voice <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>4/5</span></span></span>
-                <span>invention <span class="meter"><span class="meter-track"><span style="width:60%"></span></span><span>2/5</span></span></span>
-              </div>
-              <div class="sample-text">Okay, so I&#x27;m just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It would be similar to Wispr Flow but not quite with Billie Flow. The whole premise is to run it on my MacBook using LLM.</div>
-              <p class="correction-line">Whisper Flow -&gt; Wispr Flow (1), Billy Flow -&gt; Billie Flow (1), Macbook -&gt; MacBook (1)</p>
-            </article>
+            </details>
 
-            <article class="cleanup-example">
-              <div class="cleanup-meta">
+            <details class="cleanup-example">
+              <summary class="cleanup-meta">
                 <span>Gemma 4 12B Audio</span>
                 <strong>Light cleanup / MLX local small text</strong>
+              </summary>
+              <div class="cleanup-body">
+                <p>Useful style-specific transform; source ASR errors still leak through.</p>
+                <div class="score-line">
+                  <span>fidelity <span class="meter"><span class="meter-track"><span style="width:60%"></span></span><span>3/5</span></span></span>
+                  <span>voice <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>4/5</span></span></span>
+                  <span>invention <span class="meter"><span class="meter-track"><span style="width:60%"></span></span><span>2/5</span></span></span>
+                </div>
+                <div class="sample-text">Okay, so I&#x27;m just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It&#x27;s similar to Wispr Flow, but not quite like that. I&#x27;ve been working on it, and the whole premise is to run it on my MacBook.</div>
+                <p class="correction-line">WhisperFlow -&gt; Wispr Flow (1)</p>
               </div>
-              <p>Useful style-specific transform; source ASR errors still leak through.</p>
-              <div class="score-line">
-                <span>fidelity <span class="meter"><span class="meter-track"><span style="width:60%"></span></span><span>3/5</span></span></span>
-                <span>voice <span class="meter"><span class="meter-track"><span style="width:80%"></span></span><span>4/5</span></span></span>
-                <span>invention <span class="meter"><span class="meter-track"><span style="width:60%"></span></span><span>2/5</span></span></span>
-              </div>
-              <div class="sample-text">Okay, so I&#x27;m just going to ramble a little bit and see how good the quality of this voice memo is. Essentially, I want to build a local voice clone. It&#x27;s similar to Wispr Flow, but not quite like that. I&#x27;ve been working on it, and the whole premise is to run it on my MacBook.</div>
-              <p class="correction-line">WhisperFlow -&gt; Wispr Flow (1)</p>
-            </article>
+            </details>
             </div>
     </section>
 

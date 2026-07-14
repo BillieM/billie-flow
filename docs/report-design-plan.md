@@ -21,18 +21,18 @@ built for making a decision rather than admiring a dashboard.
 
 First viewport:
 
-- title: `Voice Memo ASR Bake-off`
-- recommended path summary
-- one-line verdict
-- compact branch diagram
+- title: `The 12B audio model wasn't the answer`
+- the expected Gemma 4 12B path beside the selected Whisper plus Qwen path
+- the measured `258.79s` versus approximately `4.30s` contrast
+- a roughly `60x faster` verdict with the practical quality judgement attached
 
 Main sections:
 
-1. **Pipeline Tree**
-   Diagram from audio to chunker to ASR to cleanup model to style.
-
-2. **Recommended Defaults**
+1. **Recommended Defaults**
    The chosen ASR/cleanup/style combination, with reasons and caveats.
+
+2. **Pipeline Tree**
+   Diagram from audio to chunker to ASR to cleanup model to style.
 
 3. **ASR Evidence**
    Compact branch rows with transcript excerpts hidden behind details elements,
@@ -106,6 +106,10 @@ Useful interactions:
 - highlight known vocabulary terms and observed errors
 
 Do not require a dev server to view the report.
+
+The public copy is published as a first-class page at
+`https://billiem.uk/reports/billie-flow-model-analysis/`. The generated file in
+this repository remains the source artifact.
 
 Do not embed raw runner JSON, full prompts, raw responses, or raw path
 breadcrumbs in the public artifact. Keep local raw output ignored by Git.

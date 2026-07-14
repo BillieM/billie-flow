@@ -186,6 +186,9 @@ python3 scripts/build_report.py \
 
 Then open `reports/voice-memo.html` in a browser.
 
+The published companion report is available at
+<https://billiem.uk/reports/billie-flow-model-analysis/>.
+
 For a real run, model adapters first write local receipts under the ignored
 `experiments/<run-id>/raw/` tree:
 
@@ -284,7 +287,9 @@ model downloads, and platform-specific runtimes.
 
 ## Report Artifact
 
-The canonical artifact is `reports/voice-memo.html`. It is self-contained and
-can be opened directly or served by any static file server. Publication belongs
-to the BillieM website repository so its route, shared chrome, sensitivity
-checks, sitemap entry, and deployment remain part of the main site contract.
+The source artifact is `reports/voice-memo.html`. It is self-contained and can
+be opened directly or served by any static file server. The canonical public
+copy is <https://billiem.uk/reports/billie-flow-model-analysis/>. Publication
+belongs to the BillieM website repository so its route, shared chrome,
+sensitivity checks, sitemap entry, and deployment remain part of the main site
+contract.

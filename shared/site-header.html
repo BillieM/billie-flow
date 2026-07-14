@@ -1,8 +1,42 @@
 <header class="site-header" data-billiem-chrome="site-header">
-  <a class="wordmark" href="https://billiem.uk/" aria-label="billiem home">billiem</a>
-  <nav aria-label="Site">
+  <a class="wordmark" href="https://billiem.uk/" aria-label="billiem home">
+    <svg class="site-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <path d="M32 7c-13 0-21 9-21 22v10h42V29C53 16 45 7 32 7Z" fill="currentColor"/>
+      <path class="site-mark-tentacle site-mark-tentacle-left-outer" d="M15 35c0 11-5 15-10 17" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+      <path class="site-mark-tentacle site-mark-tentacle-left-inner" d="M25 36c0 12-2 17-8 21" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+      <path class="site-mark-tentacle site-mark-tentacle-right-inner" d="M39 36c0 12 2 17 8 21" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+      <path class="site-mark-tentacle site-mark-tentacle-right-outer" d="M49 35c0 11 5 15 10 17" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="25" cy="25" r="2.4" fill="var(--bg)"/>
+      <circle cx="39" cy="25" r="2.4" fill="var(--bg)"/>
+      <path d="M24 30c4 6 12 6 16 0" fill="none" stroke="var(--bg)" stroke-width="3.6" stroke-linecap="round"/>
+    </svg>
+    <span>billiem</span>
+  </a>
+  <nav class="site-nav site-nav--desktop" aria-label="Site">
+    <a href="https://billiem.uk/explore/">Explore</a>
+    <a href="https://billiem.uk/contact/">Contact</a>
     <a href="https://billiem.uk/feed.xml">RSS</a>
     <a href="https://billiem.uk/graph/">Graph</a>
     <a href="https://github.com/billiem" rel="me noopener noreferrer">GitHub</a>
   </nav>
+  <details class="site-menu">
+    <summary aria-label="Menu">
+      <svg class="site-menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path class="site-menu-line site-menu-line--top" d="M4 6h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path class="site-menu-line site-menu-line--middle" d="M4 12h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path class="site-menu-line site-menu-line--bottom" d="M4 18h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </summary>
+    <div class="site-menu-panel">
+      <div class="site-menu-panel-inner">
+        <nav class="site-nav site-nav--mobile" aria-label="Site">
+          <a href="https://billiem.uk/explore/">Explore</a>
+          <a href="https://billiem.uk/contact/">Contact</a>
+          <a href="https://billiem.uk/feed.xml">RSS</a>
+          <a href="https://billiem.uk/graph/">Graph</a>
+          <a href="https://github.com/billiem" rel="me noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </div>
+  </details>
 </header>

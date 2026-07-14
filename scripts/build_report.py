@@ -13,6 +13,12 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 SHARED = ROOT / "shared"
 VOCABULARY = ["Wispr Flow", "Billie Flow", "LLM", "MacBook"]
+REPORT_CANONICAL_URL = "https://billiem.uk/reports/billie-flow-model-analysis/"
+REPORT_DESCRIPTION = (
+    "The Billie Flow model analysis that replaced an expected Gemma 12B path "
+    "with a faster Whisper and Qwen local pipeline."
+)
+REPORT_SOCIAL_IMAGE = "https://billiem.uk/static/brand/social-default-v3.png"
 
 
 def e(value: Any) -> str:
@@ -141,13 +147,15 @@ def correction_text(corrections: list[dict[str, Any]]) -> str:
     )
 
 
-def shared_chrome() -> tuple[str, str]:
+def shared_chrome() -> tuple[str, str, str]:
     header_path = SHARED / "site-header.html"
     css_path = SHARED / "site-chrome.css"
-    if header_path.exists() and css_path.exists():
+    marker_path = SHARED / "site-version.html"
+    if header_path.exists() and css_path.exists() and marker_path.exists():
         return (
             header_path.read_text(encoding="utf-8").strip(),
             css_path.read_text(encoding="utf-8").strip(),
+            marker_path.read_text(encoding="utf-8").strip(),
         )
     return (
         '<header class="site-header" data-billiem-chrome="site-header">'
@@ -156,6 +164,7 @@ def shared_chrome() -> tuple[str, str]:
         '<a href="https://billiem.uk/graph/">Graph</a>'
         '<a href="https://github.com/billiem" rel="me noopener noreferrer">GitHub</a></nav></header>',
         fallback_chrome_css(),
+        '<meta name="billiem-shared" content="report-fallback">',
     )
 
 
@@ -164,20 +173,47 @@ def render_intro(data: dict[str, Any]) -> str:
     default = defaults(data)
     asr_map = by_id(data.get("asr_results", []))
     default_asr = asr_map.get(default.get("default_asr_backend"), {})
+    gemma = asr_map.get("gemma-4-12b-audio", {})
     default_style = style_by_id(data, default.get("default_combination_id")) or {}
+    default_total = float(default_asr.get("runtime_seconds") or 0) + float(default_style.get("runtime_seconds") or 0)
+    gemma_seconds = float(gemma.get("runtime_seconds") or 0)
+    speedup = gemma_seconds / default_total if default_total else 0
     completed_asr = sum(1 for item in data.get("asr_results", []) if item.get("status") == "complete")
     cleanup_count = sum(1 for item in data.get("style_results", []) if item.get("status") == "complete")
     return f"""
     <section class="intro report-intro" aria-labelledby="report-title">
-      <p class="eyebrow">Billie Flow Lab</p>
-      <h1 id="report-title">{e(run.get("title", "Voice Memo ASR Bake-off"))}</h1>
-      <p class="lede">Use MLX Whisper large-v3-turbo for the first app default, pair it with small local light cleanup, and keep vocabulary correction deterministic.</p>
+      <p class="eyebrow">Billie Flow model analysis</p>
+      <h1 id="report-title">The 12B audio model wasn’t the answer</h1>
+      <p class="lede">I started with Gemma 12B because native audio sounded like the obvious route. On this memo it took {fmt_seconds(gemma_seconds)} and drifted. MLX Whisper plus a small Qwen cleanup pass finished in about {fmt_seconds(default_total)} and gave the better app default.</p>
+      <div class="result-comparison" aria-label="Expected model compared with selected pipeline">
+        <article class="result-card result-expected">
+          <span>Expected</span>
+          <strong>Gemma 4 12B Audio</strong>
+          <b>{fmt_seconds(gemma_seconds)}</b>
+          <p>One native-audio path, but far slower and affected by chunk-overlap drift.</p>
+        </article>
+        <div class="result-arrow" aria-hidden="true">→</div>
+        <article class="result-card result-selected">
+          <span>Selected</span>
+          <strong>Whisper + Qwen 1.5B</strong>
+          <b>{fmt_seconds(default_total)}</b>
+          <p>Separate recognition and cleanup, roughly {speedup:.0f}× faster here and easier to inspect.</p>
+        </article>
+      </div>
       <dl class="summary-strip">
         <div><dt>Clip</dt><dd>{fmt_seconds(run.get("duration_seconds"))}</dd></div>
-        <div><dt>ASR default</dt><dd>{e(default_asr.get("label", default.get("default_asr_backend", "n/a")))}</dd></div>
-        <div><dt>Cleanup</dt><dd>{e(default_style.get("cleanup_model_label", default.get("default_cleanup_model", "n/a")))}</dd></div>
+        <div><dt>Recognition</dt><dd>{e(default_asr.get("label", default.get("default_asr_backend", "n/a")))}</dd></div>
+        <div><dt>Cleanup</dt><dd>Qwen2.5 1.5B<small>{e(default_style.get("cleanup_model_label", default.get("default_cleanup_model", "n/a")))}</small></dd></div>
         <div><dt>Evidence</dt><dd>{completed_asr} ASR branches, {cleanup_count} cleanup runs</dd></div>
       </dl>
+      <nav class="report-nav" aria-label="Report sections">
+        <a href="#defaults">Decision</a>
+        <a href="#diagram">Model branches</a>
+        <a href="#asr-evidence">Transcripts</a>
+        <a href="#cleanup">Cleanup</a>
+        <a href="#vocabulary">Vocabulary</a>
+        <a href="#method">Method</a>
+      </nav>
     </section>
     """
 
@@ -192,21 +228,17 @@ def render_branch_diagram(data: dict[str, Any]) -> str:
         rows.append(
             f"""
             <article class="branch-row branch-{e(role)}">
-              <div class="branch-role">{e(role)}</div>
-              <div class="branch-node">
-                <span>chunking</span>
-                <strong>{e(item.get("chunking_strategy", "unknown"))}</strong>
-              </div>
-              <div class="branch-node">
-                <span>ASR</span>
-                <strong>{e(item.get("label", item.get("id")))}</strong>
-                <small>{e(status_label(item.get("status")))} / {fmt_seconds(item.get("runtime_seconds"))}</small>
-              </div>
-              <div class="branch-node">
-                <span>vocabulary</span>
-                <strong>{correct_terms} correct / {missed_terms} missed</strong>
-              </div>
-              <div class="branch-verdict">{e(item.get("review", {}).get("summary", "No review recorded."))}</div>
+              <header>
+                <span class="branch-role">{e(role)}</span>
+                <h3>{e(item.get("label", item.get("id")))}</h3>
+                <strong>{fmt_seconds(item.get("runtime_seconds"))}</strong>
+              </header>
+              <dl class="branch-facts">
+                <div><dt>Chunking</dt><dd>{e(item.get("chunking_strategy", "unknown"))}</dd></div>
+                <div><dt>Vocabulary</dt><dd>{correct_terms} correct / {missed_terms} missed</dd></div>
+                <div><dt>Status</dt><dd>{e(status_label(item.get("status")))}</dd></div>
+              </dl>
+              <p class="branch-verdict">{e(item.get("review", {}).get("summary", "No review recorded."))}</p>
             </article>
             """
         )
@@ -219,13 +251,7 @@ def render_branch_diagram(data: dict[str, Any]) -> str:
         </div>
         <p class="small">The page stays diagram-first; transcripts sit behind the model rows.</p>
       </div>
-      <div class="pipeline-spine" aria-label="Pipeline">
-        <span>Voice memo</span>
-        <span>16 kHz mono</span>
-        <span>ASR branch</span>
-        <span>Cleanup</span>
-        <span>Vocabulary repair</span>
-      </div>
+      <p class="pipeline-line"><span>Voice memo</span><b>→</b><span>16 kHz mono</span><b>→</b><span>ASR branch</span><b>→</b><span>Qwen cleanup</span><b>→</b><span>Vocabulary repair</span></p>
       <div class="branch-list">{''.join(rows)}</div>
     </section>
     """
@@ -277,6 +303,10 @@ def render_asr_evidence(data: dict[str, Any]) -> str:
 
 def render_defaults(data: dict[str, Any]) -> str:
     default = defaults(data)
+    asr_map = by_id(data.get("asr_results", []))
+    default_asr = asr_map.get(default.get("default_asr_backend"), {})
+    fallback_asr = asr_map.get(default.get("fallback_asr_backend"), {})
+    default_style = style_by_id(data, default.get("default_combination_id")) or {}
     recommendations = data.get("recommendations", [])
     rec_html = "".join(
         f"""
@@ -297,10 +327,10 @@ def render_defaults(data: dict[str, Any]) -> str:
         </div>
       </div>
       <dl class="decision-grid">
-        <div><dt>ASR</dt><dd>{e(default.get("default_asr_backend", "n/a"))}</dd></div>
-        <div><dt>Cleanup model</dt><dd>{e(default.get("default_cleanup_model", "n/a"))}</dd></div>
-        <div><dt>Style</dt><dd>{e(default.get("default_cleanup_style", "n/a"))}</dd></div>
-        <div><dt>Fallback</dt><dd>{e(default.get("fallback_asr_backend", "n/a"))}<small>{e(default.get("fallback_note", ""))}</small></dd></div>
+        <div><dt>Recognition</dt><dd>{e(default_asr.get("label", default.get("default_asr_backend", "n/a")))}</dd></div>
+        <div><dt>Cleanup model</dt><dd>Qwen2.5 1.5B<small>{e(default_style.get("cleanup_model_label", default.get("default_cleanup_model", "n/a")))}</small></dd></div>
+        <div><dt>Style</dt><dd>Light cleanup</dd></div>
+        <div><dt>Smoke fallback</dt><dd>{e(fallback_asr.get("label", default.get("fallback_asr_backend", "n/a")))}<small>{e(default.get("fallback_note", ""))}</small></dd></div>
       </dl>
       <div class="recommendation-grid">{rec_html}</div>
     </section>
@@ -346,20 +376,22 @@ def render_cleanup_examples(data: dict[str, Any]) -> str:
         scores = review.get("scores", {})
         cards.append(
             f"""
-            <article class="cleanup-example">
-              <div class="cleanup-meta">
+            <details class="cleanup-example">
+              <summary class="cleanup-meta">
                 <span>{e(item.get("source_asr_label", item.get("source_asr_id")))}</span>
                 <strong>{e(item.get("style_label", item.get("style_id")))} / {e(item.get("cleanup_model_label", item.get("cleanup_model_id")))}</strong>
+              </summary>
+              <div class="cleanup-body">
+                <p>{e(review.get("summary", "No review recorded."))}</p>
+                <div class="score-line">
+                  <span>fidelity {score_meter(scores.get("fidelity"))}</span>
+                  <span>voice {score_meter(scores.get("voice_preservation"))}</span>
+                  <span>invention {score_meter(scores.get("invention_risk"), invert=True)}</span>
+                </div>
+                {text_sample(item.get("output", ""))}
+                <p class="correction-line">{e(correction_text(item.get("postprocess_corrections", [])))}</p>
               </div>
-              <p>{e(review.get("summary", "No review recorded."))}</p>
-              <div class="score-line">
-                <span>fidelity {score_meter(scores.get("fidelity"))}</span>
-                <span>voice {score_meter(scores.get("voice_preservation"))}</span>
-                <span>invention {score_meter(scores.get("invention_risk"), invert=True)}</span>
-              </div>
-              {text_sample(item.get("output", ""))}
-              <p class="correction-line">{e(correction_text(item.get("postprocess_corrections", [])))}</p>
-            </article>
+            </details>
             """
         )
     return f"""
@@ -516,9 +548,9 @@ h1, h2, h3 {
   letter-spacing: 0;
 }
 h1 {
-  max-width: 13ch;
+  max-width: 17ch;
   margin: 0;
-  font-size: clamp(2.4rem, 9vw, 6.6rem);
+  font-size: clamp(2.4rem, 7vw, 5.2rem);
 }
 h2 {
   margin: 0;
@@ -533,7 +565,7 @@ p {
 }
 .report-intro {
   max-width: 56rem;
-  padding-block: 1rem 2rem;
+  padding-block: 0.5rem 1.5rem;
   border-bottom: 1px solid var(--line);
 }
 .eyebrow,
@@ -549,9 +581,57 @@ small {
   letter-spacing: 0.12em;
 }
 .lede {
-  max-width: 48rem;
+  max-width: 50rem;
   color: var(--muted);
   font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+}
+.result-comparison {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: stretch;
+  margin-top: 1.5rem;
+}
+.result-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.25rem 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 82%, var(--bg));
+}
+.result-card span,
+.result-card p {
+  grid-column: 1 / -1;
+}
+.result-card span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 760;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.result-card strong,
+.result-card b {
+  font-size: 1.08rem;
+}
+.result-card b {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.result-card p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+}
+.result-selected {
+  border-color: color-mix(in srgb, var(--accent) 65%, var(--line));
+  background: var(--accent-soft);
+}
+.result-arrow {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 1.4rem;
 }
 .summary-strip,
 .decision-grid {
@@ -585,6 +665,22 @@ dd small {
   margin-top: 0.2rem;
   font-weight: 400;
 }
+.report-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  padding-top: 1rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+.report-nav a {
+  text-decoration: none;
+}
+.report-nav a:hover,
+.report-nav a:focus-visible {
+  color: var(--link, var(--accent));
+  text-decoration: underline;
+}
 .evidence-section {
   padding-block: 2rem;
   border-bottom: 1px solid var(--line);
@@ -599,24 +695,25 @@ dd small {
 .section-head p {
   margin: 0;
 }
-.pipeline-spine {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-.pipeline-spine span,
-.branch-node,
+.branch-row,
 .recommendation,
 .cleanup-example,
 .model-evidence {
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--panel) 82%, var(--bg));
 }
-.pipeline-spine span {
-  padding: 0.55rem 0.65rem;
+.pipeline-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.6rem;
+  margin: 0 0 0.85rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line);
   color: var(--muted);
   font-size: 0.82rem;
+}
+.pipeline-line b {
+  color: var(--accent);
 }
 .branch-list,
 .model-list,
@@ -625,15 +722,35 @@ dd small {
   display: grid;
   gap: 0.7rem;
 }
+.branch-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 .branch-row {
+  min-width: 0;
+  padding: 1rem;
+}
+.branch-default {
+  grid-column: 1 / -1;
+  border-color: color-mix(in srgb, var(--accent) 65%, var(--line));
+  background: var(--accent-soft);
+}
+.branch-row header {
   display: grid;
-  grid-template-columns: 5.2rem repeat(3, minmax(0, 1fr)) minmax(12rem, 1.35fr);
-  gap: 0.5rem;
-  align-items: stretch;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.7rem;
+  align-items: center;
+}
+.branch-row header h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.branch-row header > strong {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
 .branch-role {
-  display: grid;
-  place-items: center;
+  display: inline-block;
+  padding: 0.18rem 0.45rem;
   border: 1px solid var(--line);
   color: var(--muted);
   font-size: 0.78rem;
@@ -641,17 +758,17 @@ dd small {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-.branch-default .branch-role,
-.branch-default .branch-node {
-  border-color: color-mix(in srgb, var(--accent) 65%, var(--line));
-  background: var(--accent-soft);
+.branch-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0.8rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
 }
-.branch-node,
-.branch-verdict {
-  min-width: 0;
-  padding: 0.7rem;
+.branch-facts dd {
+  font-size: 0.9rem;
 }
-.branch-node span,
 .cleanup-meta span,
 .recommendation span {
   display: block;
@@ -660,19 +777,15 @@ dd small {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-.branch-node strong,
 .cleanup-meta strong {
   display: block;
   overflow-wrap: anywhere;
 }
-.branch-node small {
-  display: block;
-  margin-top: 0.2rem;
-}
 .branch-verdict {
+  margin: 0.8rem 0 0;
+  padding-top: 0.75rem;
   color: var(--muted);
   border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
 }
 .decision-grid {
   margin-bottom: 1rem;
@@ -681,7 +794,7 @@ dd small {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .recommendation,
-.cleanup-example {
+.cleanup-body {
   padding: 1rem;
 }
 .recommendation strong {
@@ -695,6 +808,17 @@ dd small {
 }
 .model-evidence {
   overflow: hidden;
+}
+.cleanup-example {
+  overflow: hidden;
+}
+.cleanup-meta {
+  display: block;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+}
+.cleanup-body {
+  border-top: 1px solid var(--line);
 }
 .model-evidence summary {
   display: flex;
@@ -824,14 +948,24 @@ footer {
   font-size: 0.86rem;
 }
 @media (max-width: 52rem) {
+  .result-comparison,
   .summary-strip,
   .decision-grid,
-  .pipeline-spine,
-  .branch-row,
+  .branch-list,
   .recommendation-grid,
   .evidence-grid,
   .method-grid {
     grid-template-columns: 1fr;
+  }
+  .result-arrow {
+    transform: rotate(90deg);
+  }
+  .branch-default {
+    grid-column: auto;
+  }
+  .branch-facts {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
   }
   .summary-strip div,
   .decision-grid div {
@@ -863,9 +997,9 @@ footer {
 
 
 def render_page(data: dict[str, Any]) -> str:
-    header_html, chrome_css = shared_chrome()
+    header_html, chrome_css, shared_marker = shared_chrome()
     run = data.get("run", {})
-    title = run.get("title") or f"Billie Flow Report: {run.get('id', 'run')}"
+    title = "The Billie Flow local model analysis | billiem"
     snapshot_date = str(run.get("created_at", "undated"))[:10]
     return f"""<!doctype html>
 <html lang="en">
@@ -873,6 +1007,28 @@ def render_page(data: dict[str, Any]) -> str:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
+  <meta name="author" content="Billie">
+  {shared_marker}
+  <meta name="theme-color" content="#f7f7f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f0f11" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="{e(REPORT_DESCRIPTION)}">
+  <link rel="canonical" href="{e(REPORT_CANONICAL_URL)}">
+  <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
+  <meta property="og:site_name" content="billiem">
+  <meta property="og:title" content="The Billie Flow local model analysis">
+  <meta property="og:description" content="{e(REPORT_DESCRIPTION)}">
+  <meta property="og:url" content="{e(REPORT_CANONICAL_URL)}">
+  <meta property="og:image" content="{e(REPORT_SOCIAL_IMAGE)}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="billiem — personal projects and writing.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Billie Flow local model analysis">
+  <meta name="twitter:description" content="{e(REPORT_DESCRIPTION)}">
+  <meta name="twitter:image" content="{e(REPORT_SOCIAL_IMAGE)}">
+  <meta name="twitter:image:alt" content="billiem — personal projects and writing.">
   <title>{e(title)}</title>
   <style>
 {chrome_css}
@@ -880,11 +1036,12 @@ def render_page(data: dict[str, Any]) -> str:
   </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 {header_html}
-  <main>
+  <main id="main-content">
     {render_intro(data)}
-    {render_branch_diagram(data)}
     {render_defaults(data)}
+    {render_branch_diagram(data)}
     {render_asr_evidence(data)}
     {render_cleanup_examples(data)}
     {render_vocab_matrix(data)}
